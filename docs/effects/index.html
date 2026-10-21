@@ -1,0 +1,396 @@
+<title>Solitaire Win Effects</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Pixelify+Sans:wght@500;700&display=swap">
+<style>
+  /* Layout: one reading column for the explanations, widening to a full-width grid for the catalogue. */
+  :root {
+    --bg: #eef2ec;
+    --surface: #ffffff;
+    --ink: #142017;
+    --muted: #556458;
+    --line: #cad5cb;
+    --felt: #0b7a2a;
+    --felt-soft: #dcebdd;
+    --red: #c4141a;
+    --f-time: #2c5bc9;
+    --f-colour: #a8238f;
+    --f-path: #0d7f70;
+    --f-physics: #a85f00;
+    --f-glitch: #c4141a;
+    --display: "Pixelify Sans", "Courier New", monospace;
+    --body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0c1610; --surface: #132119; --ink: #e5eee6; --muted: #93a598; --line: #263a2d;
+      --felt: #4cc271; --felt-soft: #183323; --red: #ff6461;
+      --f-time: #7da2ff; --f-colour: #f27ad9; --f-path: #4fd2bd; --f-physics: #f0a640; --f-glitch: #ff6461;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0c1610; --surface: #132119; --ink: #e5eee6; --muted: #93a598; --line: #263a2d;
+    --felt: #4cc271; --felt-soft: #183323; --red: #ff6461;
+    --f-time: #7da2ff; --f-colour: #f27ad9; --f-path: #4fd2bd; --f-physics: #f0a640; --f-glitch: #ff6461;
+    color-scheme: dark;
+  }
+
+  body { background: var(--bg); color: var(--ink); font: 16px/1.6 var(--body); }
+  .wrap {
+    max-width: 1180px; margin: 0 auto;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+    padding-block: 40px 72px;
+    display: grid; gap: 64px;
+  }
+  .col { max-width: 720px; display: grid; gap: 16px; min-width: 0; }
+  h1, h2 { font-family: var(--display); font-weight: 700; line-height: 1.1; text-wrap: balance; margin: 0; }
+  h1 { font-size: clamp(2.2rem, 6vw, 3.6rem); }
+  h2 { font-size: clamp(1.6rem, 3.6vw, 2.2rem); }
+  h3 { font-size: 1.05rem; margin: 0; font-weight: 600; }
+  p { margin: 0; }
+  .eyebrow { font: 500 0.78rem/1 var(--mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--felt); }
+  .lead { font-size: 1.15rem; color: var(--muted); max-width: 62ch; }
+  .muted { color: var(--muted); }
+  code, .num { font-family: var(--mono); font-size: 0.92em; font-variant-numeric: tabular-nums; }
+
+  /* Hero */
+  header { display: grid; gap: 28px; }
+  .hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr); gap: 32px; align-items: center; }
+  .hero figure { margin: 0; }
+  .shot { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; image-rendering: pixelated;
+          border: 1px solid var(--line); background: #008000; }
+  figcaption { font-size: 0.85rem; color: var(--muted); margin-top: 8px; }
+  @media (max-width: 760px) { .hero { grid-template-columns: 1fr; } }
+
+  /* Drift */
+  .facts { display: grid; gap: 12px; padding: 0; margin: 0; list-style: none; }
+  .facts li { display: grid; grid-template-columns: 7.5rem minmax(0, 1fr); gap: 16px; padding-top: 12px; border-top: 1px solid var(--line); }
+  .facts b { font-family: var(--mono); font-weight: 500; font-size: 0.85rem; color: var(--felt); }
+  @media (max-width: 520px) { .facts li { grid-template-columns: 1fr; gap: 2px; } }
+  .chart { width: 100%; overflow-x: auto; }
+  .chart svg { display: block; width: 100%; min-width: 520px; height: auto; }
+  .chart text { font: 11px var(--mono); fill: var(--muted); }
+
+  /* Stacking */
+  .table-wrap { overflow-x: auto; border: 1px solid var(--line); background: var(--surface); }
+  table { border-collapse: collapse; width: 100%; font-size: 0.93rem; }
+  th, td { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { font: 500 0.75rem var(--mono); letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+  tr:last-child td { border-bottom: 0; }
+  td.num, th.num { text-align: right; }
+
+  .sim { background: var(--surface); border: 1px solid var(--line); padding: 20px; display: grid; gap: 16px; }
+  .sim-controls { display: flex; flex-wrap: wrap; gap: 12px 20px; align-items: center; }
+  .sim-controls label { font: 500 0.85rem var(--mono); display: flex; align-items: center; gap: 10px; }
+  input[type="range"] { accent-color: var(--felt); width: 180px; }
+  button {
+    font: 600 0.95rem var(--body); color: var(--surface); background: var(--felt); border: 0;
+    padding: 9px 18px; cursor: pointer;
+  }
+  button:hover { filter: brightness(1.08); }
+  button:focus-visible, .filter:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+  .rolls { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+  .rolls li { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; padding-top: 8px; border-top: 1px solid var(--line); }
+  .rolls li:first-child { border-top: 0; padding-top: 0; }
+  .rolls .at { font: 0.8rem var(--mono); color: var(--muted); min-width: 5.5rem; }
+
+  .chip {
+    display: inline-flex; align-items: center; gap: 6px; font: 500 0.8rem/1 var(--mono);
+    padding: 5px 8px; border: 1px solid currentColor; white-space: nowrap;
+  }
+  .chip::before { content: ""; width: 7px; height: 7px; background: currentColor; }
+  .fam-time { color: var(--f-time); } .fam-colour { color: var(--f-colour); } .fam-path { color: var(--f-path); }
+  .fam-physics { color: var(--f-physics); } .fam-glitch { color: var(--f-glitch); }
+  .rare { font: 700 0.7rem/1 var(--mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--surface);
+          background: var(--red); padding: 4px 6px; }
+
+  .stacks { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; }
+  .stacks figure { margin: 0; }
+
+  /* Catalogue */
+  .filters { display: flex; flex-wrap: wrap; gap: 8px; }
+  .filter {
+    font: 500 0.85rem var(--mono); padding: 7px 12px; background: transparent; color: var(--ink);
+    border: 1px solid var(--line); cursor: pointer;
+  }
+  .filter[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); gap: 28px 20px; }
+  .fx { display: grid; gap: 10px; align-content: start; min-width: 0; }
+  .fx-head { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .fx-head h3 { margin-right: auto; }
+  .fx p { font-size: 0.93rem; }
+  .meta { display: flex; flex-wrap: wrap; gap: 4px 14px; font: 0.78rem/1.4 var(--mono); color: var(--muted); }
+  .note { font-size: 0.82rem; color: var(--muted); font-style: italic; }
+
+  footer { font-size: 0.85rem; color: var(--muted); border-top: 1px solid var(--line); padding-top: 20px; }
+  @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="hero">
+      <div class="col">
+        <span class="eyebrow">macOS screensaver · 43 effects</span>
+        <h1>Solitaire Win effects</h1>
+        <p class="lead">The Windows Solitaire win screen, faithful at first. After a couple of minutes it starts to go wrong, gets steadily worse, then reboots and does it again. This page lists everything that can go wrong and how the effects pile up.</p>
+      </div>
+      <figure>
+        <img class="shot" src="img/normal.jpg" alt="Green felt with cards bouncing off the bottom edge, each leaving a dense trail of copies.">
+        <figcaption>The faithful phase: the four kings wait on the foundations, then cards leave one at a time and bounce.</figcaption>
+      </figure>
+    </div>
+  </header>
+
+  <section class="col" aria-labelledby="drift">
+    <span class="eyebrow">Over time</span>
+    <h2 id="drift">How it drifts</h2>
+    <p>Everything hangs on one number, <b>chaos</b>, from 0 (the real win screen) to 1 (fully broken). It follows the clock, not chance.</p>
+    <div class="chart" id="chart" role="img" aria-label="Chaos stays at 0 for 2 minutes, rises along an S-curve to 1 at 10 minutes, and the number of effects allowed at once steps from 1 to 4."></div>
+    <ul class="facts">
+      <li><b>0–2 min</b><span>Nothing goes wrong. The delay is a quarter of the ramp, which is 8 minutes by default (Options… changes it).</span></li>
+      <li><b>2–10 min</b><span>Chaos climbs along an S-curve: slow start, fast middle, slow finish.</span></li>
+      <li><b>Every second</b><span>If there is a free slot, there is a <span class="num">3% + 50% × chaos²</span> chance a new effect starts. That is 3% at the start and 53% at full chaos.</span></li>
+      <li><b>Which one</b><span>A weighted draw among effects unlocked at the current chaos and not already running. Rare effects have about a twentieth of the usual weight.</span></li>
+      <li><b>How hard</b><span>Strength is random, scaled up with chaos. Durations stretch from 0.6× to 1.5× as chaos rises.</span></li>
+      <li><b>Reboot</b><span>2–10 minutes after reaching full chaos, the screen hangs for a second with tearing, wipes to felt, puts the kings back, and chaos drops to 0.2.</span></li>
+    </ul>
+  </section>
+
+  <section class="col" aria-labelledby="stacking">
+    <span class="eyebrow">Combining</span>
+    <h2 id="stacking">How effects stack</h2>
+    <p>Up to <span class="num">1 + ⌊3 × chaos⌋</span> effects run at once: one until chaos reaches 0.33, then two, three, and four at full chaos. The same effect never runs twice at once. Every frame, each running effect adjusts one shared set of settings in the order the effects started, so they combine instead of taking turns:</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Setting</th><th>Combines by</th><th>What you see</th></tr></thead>
+        <tbody>
+          <tr><td>Speed of time</td><td>Multiplying</td><td>Slow motion × burst can land near normal speed. Rewind × burst runs backwards fast. A hang or a stutter's freeze makes it zero, whatever else runs.</td></tr>
+          <tr><td>Hue, colour split, scroll, wrong-card offset, stride</td><td>Adding</td><td>Two offsets push in the same direction further, or cancel.</td></tr>
+          <tr><td>Invert, upside down, mirror</td><td>Flipping</td><td>Negative + invert flash flashes back to <em>normal</em>. Upside down + mirror turns the screen 180°.</td></tr>
+          <tr><td>Palette, greyscale, phosphor, felt colour, tear, rainbow</td><td>Strongest wins</td><td>Greyscale with phosphor gives a clean one-colour monitor. CGA with phosphor crushes the tint to four colours.</td></tr>
+          <tr><td>Gravity, bounce, size</td><td>Each changes the result of the last</td><td>Sideways gravity then gravity flip points gravity up and to the side. Orbit cancels gravity, so zero g on top changes nothing.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>So the stacks are not designed combinations. They come out of random draws, and that leaves a lot of them:</p>
+    <div class="table-wrap">
+      <table id="counts">
+        <thead><tr><th>Chaos</th><th class="num">Effects unlocked</th><th class="num">Running at most</th><th class="num">Different sets possible</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <p class="muted">Each run also draws its own strength, duration and details (the orbit's centre, the phosphor colour, the stride width), so the same set rarely looks the same twice.</p>
+
+    <div class="sim" aria-labelledby="sim-title">
+      <div class="fx-head"><h3 id="sim-title">Roll a stack</h3></div>
+      <p class="muted">This runs the same rules as the saver for a few random minutes at the chosen chaos, then shows what is running at that moment.</p>
+      <div class="sim-controls">
+        <label for="chaos">Chaos <input id="chaos" type="range" min="0.05" max="1" step="0.05" value="1"> <span id="chaos-out" class="num">1.00</span></label>
+        <button id="roll" type="button">Roll</button>
+      </div>
+      <ul class="rolls" id="rolls" aria-live="polite"></ul>
+    </div>
+
+    <div class="stacks">
+      <figure><img class="shot" src="img/stack-cycle-rainbow.jpg" alt="Trails flickering through many different card faces, each band tinted a different hue." loading="lazy"><figcaption><b>card cycle + rainbow cards</b>: every stamp is a different card in a different colour.</figcaption></figure>
+      <figure><img class="shot" src="img/stack-orbit-walls-rainbow.jpg" alt="Rainbow-coloured trails curving around a point in the middle of the screen." loading="lazy"><figcaption><b>orbit + walls + rainbow cards</b>: cards circle a point and cannot escape.</figcaption></figure>
+      <figure><img class="shot" src="img/stack-phosphor-slices-melt.jpg" alt="A one-colour monitor image where bands of trails are shifted sideways and columns drip down." loading="lazy"><figcaption><b>phosphor + slices + melt</b>: an old monitor tearing itself apart.</figcaption></figure>
+      <figure><img class="shot" src="img/stack-split-crowd-super-bounce.jpg" alt="Dozens of cards filling the screen, bouncing higher and higher." loading="lazy"><figcaption><b>split + crowd + super bounce</b>: copies breed on every bounce and gain height.</figcaption></figure>
+    </div>
+  </section>
+
+  <section aria-labelledby="catalogue" style="display:grid; gap:24px;">
+    <div class="col">
+      <span class="eyebrow">Catalogue</span>
+      <h2 id="catalogue">Every effect</h2>
+      <p>Each picture is that effect on its own, a few seconds in. The time effects change speed, which a still cannot show; press <code>1</code> in the harness to see them. <span class="rare">Rare</span> marks six effects that each turn up only every half hour to an hour of full chaos. Together, one of them appears every few minutes.</p>
+    </div>
+    <div class="filters" id="filters" role="group" aria-label="Filter effects"></div>
+    <div class="grid" id="grid"></div>
+  </section>
+
+  <footer>Numbers come from the effect table in <code>Sources/Effects/</code> (<code>-list YES</code> in the harness prints it). Pictures come from <code>scripts/effect-shots.sh</code>. “About every” figures come from simulating 200 hours at full chaos with the saver's rules.</footer>
+</div>
+
+<script>
+// [name, family, minChaos, weight, minSeconds, maxSeconds, instant]
+const EFFECTS = [["slow motion","time",0,3,3,10,false],["burst","time",0.1,3,0.3,2.5,true],["stutter","time",0.2,2,2,6,true],["rewind","time",0.4,1.5,0.7,3,true],["lurch","time",0.3,1.5,4,12,false],["hang","time",0.3,1,1,4,true],["hue cycle","colour",0.05,3,6,20,false],["palette cycle","colour",0.25,2,4,15,false],["felt drift","colour",0.05,2,8,25,false],["invert flash","colour",0.3,1.5,0.5,3,true],["rgb split","colour",0.15,2,1,6,false],["rainbow cards","colour",0.2,1.2,5,14,false],["negative","colour",0.3,0.08,4,12,true],["phosphor","colour",0.2,0.1,6,15,false],["greyscale","colour",0.15,0.12,5,15,false],["CGA","colour",0.35,0.08,4,10,true],["sideways gravity","path",0.1,2,4,12,false],["gravity flip","path",0.35,1.5,2,6,false],["orbit","path",0.3,1.5,5,15,false],["sine wave","path",0.1,2,4,12,false],["homing","path",0.25,1.5,4,10,false],["walls","path",0.2,2,8,20,true],["drunk","path",0.15,1.5,3,10,false],["super bounce","physics",0.15,2,5,15,false],["dead bounce","physics",0.1,1.5,4,10,false],["zero g","physics",0.2,1.5,3,10,false],["split","physics",0.35,1.5,4,10,true],["teleport","physics",0.4,1,2,8,true],["resize","physics",0.2,1.5,4,12,false],["crowd","physics",0.3,1.5,6,20,true],["wrong card","glitch",0.25,2,1,6,true],["bad stride","glitch",0.4,2,0.5,4,true],["slices","glitch",0.35,2,0.3,2,true],["erase band","glitch",0.3,1.5,0.1,0.2,true],["scroll","glitch",0.3,1.5,2,8,false],["melt","glitch",0.5,1,1,5,false],["card burst","glitch",0.3,1.5,0.1,0.2,true],["wrong launch","glitch",0.25,1.5,8,20,true],["flip to back","glitch",0.2,1.5,3,10,false],["tear","glitch",0.2,2,0.5,4,true],["card cycle","glitch",0.25,1.2,3,10,true],["upside down","glitch",0.5,0.06,3,8,true],["mirror","glitch",0.4,0.06,3,8,true]]
+  .map(([name, family, minChaos, weight, dMin, dMax, instant]) => ({ name, family, minChaos, weight, dMin, dMax, instant }));
+
+const ABOUT = {
+  "slow motion": "Time slows to between a third and a thirtieth of normal, then eases back.",
+  "burst": "Time jumps to 4–30× speed for a moment, so cards streak across in a blink.",
+  "stutter": "Freezes for most of each beat, then lurches to catch up.",
+  "rewind": "Time runs backwards at 1–4×. Cards retrace their arcs and paint over their own trails.",
+  "lurch": "Speed swells and drops in waves.",
+  "hang": "Everything stops, as if the PC froze.",
+  "hue cycle": "Every colour on screen rotates around the colour wheel, faster as it goes.",
+  "palette cycle": "Colours snap to the 16-colour EGA palette, and the palette rotates.",
+  "felt drift": "Only the green felt changes colour, drifting through hues.",
+  "invert flash": "Colours flip to their negative and back, 2–12 times a second.",
+  "rgb split": "Red and blue slide sideways away from green.",
+  "rainbow cards": "Each card is tinted by a hue that cycles while it flies, so trails come out in rainbow bands.",
+  "negative": "The whole screen stays in negative.",
+  "phosphor": "The screen becomes a one-colour monitor: amber, green or blue.",
+  "greyscale": "The colour drains out.",
+  "CGA": "Everything snaps to black, cyan, magenta and white.",
+  "sideways gravity": "Gravity turns, up to all the way round, so cards fall sideways or up.",
+  "gravity flip": "Gravity reverses. Cards fly off the top and fall back when it ends.",
+  "orbit": "Gravity becomes a pull toward a point, and cards circle it.",
+  "sine wave": "Cards wave up and down as they travel.",
+  "homing": "Cards steer toward an invisible point that wanders around.",
+  "walls": "Side walls appear, sometimes a ceiling too. Cards cannot leave.",
+  "drunk": "Random shoves every tick.",
+  "super bounce": "Bounces gain energy instead of losing it, so cards go higher each time.",
+  "dead bounce": "Bounces lose almost everything; cards slide along the floor.",
+  "zero g": "Gravity fades out and cards drift in straight lines.",
+  "split": "Each hard bounce spawns 1–4 copies of the card.",
+  "teleport": "Cards jump to random spots.",
+  "resize": "Cards shrink to a quarter or grow to four times their size.",
+  "crowd": "Up to eight cards leave the foundations at once.",
+  "wrong card": "Card images are read from the wrong place in the sheet, so a card shows parts of its neighbours.",
+  "bad stride": "Card images are copied with the wrong row width. They shear into diagonal smears and bleed into other cards.",
+  "slices": "Bands of the trails jump sideways, again and again.",
+  "erase band": "A strip of trails is wiped back to felt.",
+  "scroll": "All the trails slide one way, wrapping around the edges.",
+  "melt": "Columns of trails drip downwards.",
+  "card burst": "5–40 extra cards spray out at once.",
+  "wrong launch": "Cards start from random places instead of the foundations.",
+  "flip to back": "Cards flip to random card backs in mid-flight: fish, robots, palm trees.",
+  "tear": "Bands of the screen shift sideways, like a bad signal.",
+  "card cycle": "Each card flicks through every face and back as it flies.",
+  "upside down": "The screen flips upside down.",
+  "mirror": "The screen flips left to right.",
+};
+
+const FAMILIES = ["time", "colour", "path", "physics", "glitch"];
+const isRare = e => e.weight < 0.2;
+const slug = e => e.name.replace(/ /g, "-");
+
+// Mulberry32, so the page shows the same "about every" figures on each load.
+function rng(seed) {
+  return () => {
+    seed |= 0; seed = (seed + 0x6D2B79F5) | 0;
+    let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+const lerp = (a, b, t) => a + (b - a) * t;
+
+// The Director's roll, once per second at a fixed chaos.
+function simulate(chaos, seconds, rand, onStart) {
+  let active = [];
+  for (let now = 0; now < seconds; now++) {
+    active = active.filter(a => a.end > now);
+    if (chaos <= 0.01 || active.length >= 1 + Math.floor(3 * chaos)) continue;
+    if (rand() >= 0.03 + 0.5 * chaos * chaos) continue;
+    const running = new Set(active.map(a => a.e.name));
+    const pool = EFFECTS.filter(e => e.minChaos <= chaos && !running.has(e.name));
+    let x = rand() * pool.reduce((s, e) => s + e.weight, 0);
+    const e = pool.find(p => (x -= p.weight) <= 0) || pool[pool.length - 1];
+    const dur = lerp(e.dMin, e.dMax, rand()) * lerp(0.6, 1.5, chaos);
+    active.push({ e, end: now + Math.max(1, dur) });
+    onStart?.(e);
+  }
+  return active.map(a => a.e);
+}
+
+const HOURS = 200;
+const starts = Object.fromEntries(EFFECTS.map(e => [e.name, 0]));
+simulate(1, HOURS * 3600, rng(7), e => starts[e.name]++);
+const everyMinutes = name => (HOURS * 60) / Math.max(1, starts[name]);
+const fmtEvery = m => m < 1.5 ? "about every minute" : m < 90 ? `about every ${Math.round(m)} min` : `about every ${(m / 60).toFixed(1)} h`;
+
+// Chaos chart.
+(function chart() {
+  const W = 640, H = 230, L = 44, R = 16, T = 16, B = 34;
+  const x = m => L + (m / 20) * (W - L - R);
+  const y = c => T + (1 - c) * (H - T - B);
+  const ss = t => t * t * (3 - 2 * t);
+  const pts = [];
+  for (let m = 0; m <= 20; m += 0.1) pts.push([x(m), y(m < 2 ? 0 : m > 10 ? 1 : ss((m - 2) / 8))]);
+  const line = pts.map((p, i) => (i ? "L" : "M") + p[0].toFixed(1) + " " + p[1].toFixed(1)).join(" ");
+  const area = line + ` L ${x(20)} ${y(0)} L ${x(0)} ${y(0)} Z`;
+  let grid = "";
+  for (const c of [0, 1 / 3, 2 / 3, 1]) {
+    const k = 1 + Math.floor(3 * c + 1e-9);
+    grid += `<line x1="${L}" x2="${W - R}" y1="${y(c)}" y2="${y(c)}" stroke="var(--line)" stroke-dasharray="${c ? "3 4" : ""}"/>`;
+    grid += `<text x="${L - 8}" y="${y(c) + 4}" text-anchor="end">${c.toFixed(2)}</text>`;
+    if (c > 0) grid += `<text x="${W - R - 4}" y="${y(c) - 6}" text-anchor="end">${k} at once</text>`;
+  }
+  for (const m of [0, 2, 5, 10, 15, 20]) grid += `<text x="${x(m)}" y="${H - 12}" text-anchor="middle">${m} min</text>`;
+  const reboot = `<rect x="${x(12)}" y="${T}" width="${x(20) - x(12)}" height="${H - T - B}" fill="var(--felt-soft)"/>
+    <text x="${(x(12) + x(20)) / 2}" y="${T + 16}" text-anchor="middle">reboot somewhere in here</text>`;
+  document.getElementById("chart").innerHTML =
+    `<svg viewBox="0 0 ${W} ${H}" aria-hidden="true">${reboot}${grid}
+      <path d="${area}" fill="var(--felt)" opacity="0.12"/>
+      <path d="${line}" fill="none" stroke="var(--felt)" stroke-width="2.5"/>
+      <circle cx="${x(10)}" cy="${y(1)}" r="4" fill="var(--felt)"/></svg>`;
+})();
+
+// Distinct sets per chaos level.
+(function counts() {
+  const choose = (n, k) => { let r = 1; for (let i = 1; i <= k; i++) r = r * (n - k + i) / i; return Math.round(r); };
+  const rows = [0.25, 0.5, 0.75, 1].map(c => {
+    const n = EFFECTS.filter(e => e.minChaos <= c).length, k = 1 + Math.floor(3 * c);
+    let sets = 0; for (let i = 1; i <= k; i++) sets += choose(n, i);
+    return `<tr><td class="num" style="text-align:left">${c.toFixed(2)}</td><td class="num">${n}</td><td class="num">${k}</td><td class="num">${sets.toLocaleString("en")}</td></tr>`;
+  });
+  document.querySelector("#counts tbody").innerHTML = rows.join("");
+})();
+
+const chip = e => `<span class="chip fam-${e.family}">${e.name}</span>`;
+
+// Stack roller.
+(function roller() {
+  const slider = document.getElementById("chaos"), out = document.getElementById("chaos-out"), list = document.getElementById("rolls");
+  const rand = rng(Date.now() & 0xffffffff);
+  const roll = () => {
+    const c = +slider.value;
+    const set = simulate(c, 60 + Math.floor(rand() * 240), rand);
+    const li = document.createElement("li");
+    li.innerHTML = `<span class="at">chaos ${c.toFixed(2)}</span>` + (set.length ? set.map(chip).join("") : `<span class="muted">nothing running right now</span>`);
+    list.prepend(li);
+    while (list.children.length > 6) list.lastChild.remove();
+  };
+  slider.addEventListener("input", () => out.textContent = (+slider.value).toFixed(2));
+  document.getElementById("roll").addEventListener("click", roll);
+  for (let i = 0; i < 3; i++) roll();
+})();
+
+// Catalogue.
+(function catalogue() {
+  const grid = document.getElementById("grid"), bar = document.getElementById("filters");
+  const filters = [["all", "All"], ...FAMILIES.map(f => [f, f[0].toUpperCase() + f.slice(1)]), ["rare", "Rare"]];
+  let current = "all";
+  const render = () => {
+    const shown = EFFECTS.filter(e => current === "all" || (current === "rare" ? isRare(e) : e.family === current));
+    grid.innerHTML = shown.map(e => `
+      <article class="fx">
+        <img class="shot" src="img/${slug(e)}.jpg" alt="${ABOUT[e.name]}" loading="lazy">
+        <div class="fx-head"><h3>${e.name}</h3>${isRare(e) ? `<span class="rare">Rare</span>` : ""}<span class="chip fam-${e.family}">${e.family}</span></div>
+        <p>${ABOUT[e.name]}</p>
+        <div class="meta">
+          <span>from chaos ${e.minChaos.toFixed(2)}</span>
+          <span>${e.dMin}–${e.dMax} s</span>
+          <span>${e.instant ? "switches on" : "fades in and out"}</span>
+          <span>${fmtEvery(everyMinutes(e.name))} at full chaos</span>
+        </div>
+        ${e.family === "time" ? `<p class="note">Changes speed, so the still looks like normal play.</p>` : ""}
+      </article>`).join("");
+  };
+  bar.innerHTML = filters.map(([k, label]) => `<button type="button" class="filter" data-k="${k}" aria-pressed="${k === current}">${label}</button>`).join("");
+  bar.addEventListener("click", ev => {
+    const b = ev.target.closest(".filter"); if (!b) return;
+    current = b.dataset.k;
+    bar.querySelectorAll(".filter").forEach(x => x.setAttribute("aria-pressed", x.dataset.k === current));
+    render();
+  });
+  render();
+})();
+</script>

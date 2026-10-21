@@ -3,7 +3,7 @@ import AppKit
 /// Runs the saver in a window. Keys: space pause, 1–5 force a family (time, colour, path, physics, glitch),
 /// 0 clear effects, +/- chaos, a back to automatic chaos, f clock ×10, r reboot, s print seed, p snapshot.
 ///
-/// Arguments: --seed N, --chaos X, --force FAMILY[,FAMILY], --size WxH, --fps YES, --ff YES (clock ×10), --drawn YES (drawn deck), --effect NAME[,NAME] (e.g. "flip to back"),
+/// Arguments: --seed N, --chaos X, --force FAMILY[,FAMILY], --size WxH, --fps YES, --ff YES (clock ×10), --drawn YES (drawn deck), --effect NAME[,NAME] (e.g. "flip to back"), --effectat SECONDS, --list YES (effect table as JSON),
 /// --snap DIR --snaps N --every SECONDS (writes N PNGs then quits).
 final class AppDelegate: NSObject, NSApplicationDelegate {
     var window: NSWindow!
@@ -12,6 +12,15 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     func applicationDidFinishLaunching(_ note: Notification) {
         let args = UserDefaults.standard
+        if args.bool(forKey: "list") {
+            let rows: [[String: Any]] = EffectSpec.all.map {
+                ["name": $0.name, "family": "\($0.family)", "minChaos": $0.minChaos, "weight": $0.weight,
+                 "durationMin": $0.duration.lowerBound, "durationMax": $0.duration.upperBound, "hard": $0.hard]
+            }
+            let data = try! JSONSerialization.data(withJSONObject: rows, options: [.prettyPrinted, .sortedKeys])
+            print(String(decoding: data, as: UTF8.self))
+            exit(0)
+        }
         var size = NSSize(width: 1280, height: 720)
         if let s = args.string(forKey: "size")?.split(separator: "x"), s.count == 2,
            let w = Double(s[0]), let h = Double(s[1]) { size = NSSize(width: w, height: h) }
@@ -56,7 +65,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             }
         }
         if let names = args.string(forKey: "effect") {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            let at = args.object(forKey: "effectat") != nil ? args.double(forKey: "effectat") : 0.5
+            DispatchQueue.main.asyncAfter(deadline: .now() + at) {
                 for n in names.split(separator: ",") { self.saver.force(named: String(n)) }
             }
         }

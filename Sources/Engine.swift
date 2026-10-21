@@ -7,6 +7,9 @@ struct Stamp {
     var y: Float
     var scale: Float
     var card: Int32
+    var r: Float = 1
+    var g: Float = 1
+    var b: Float = 1
 }
 
 struct Flyer {
@@ -194,7 +197,19 @@ final class Engine {
                 f.stall = 0
             }
 
-            if stamping { stamp(card: f.back ?? f.card, at: f.pos, scale: p.cardScale) }
+            if stamping {
+                var card = f.back ?? f.card
+                if p.cardCycle > 0 {
+                    let cells = 52 + backs.count
+                    let i = ((f.card + Int(f.age * p.cardCycle)) % cells + cells) % cells
+                    card = i < 52 ? i : backs[i - 52]
+                }
+                var tint = SIMD3<Double>(1, 1, 1)
+                if p.rainbow > 0 {
+                    tint = simd_mix(tint, hsv(f.age * p.rainbowSpeed + Double(f.card) / 13, 1, 1), SIMD3(repeating: p.rainbow))
+                }
+                stamp(card: card, at: f.pos, scale: p.cardScale, tint: tint)
+            }
 
             let gone = f.pos.x + cs.x < -1 || f.pos.x > size.x + 1 || f.pos.y > size.y + 2000 || f.pos.y < -3000
             if !gone || p.walls { keep.append(f) }
@@ -202,8 +217,9 @@ final class Engine {
         flyers = keep + spawned
     }
 
-    private func stamp(card: Int, at pos: SIMD2<Double>, scale: Double) {
+    private func stamp(card: Int, at pos: SIMD2<Double>, scale: Double, tint: SIMD3<Double> = SIMD3(1, 1, 1)) {
         guard stamps.count < Self.maxStamps else { return }
-        stamps.append(Stamp(x: Float(pos.x.rounded(.down)), y: Float(pos.y.rounded(.down)), scale: Float(scale), card: Int32(card)))
+        stamps.append(Stamp(x: Float(pos.x.rounded(.down)), y: Float(pos.y.rounded(.down)), scale: Float(scale),
+                            card: Int32(card), r: Float(tint.x), g: Float(tint.y), b: Float(tint.z)))
     }
 }

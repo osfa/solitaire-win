@@ -27,7 +27,15 @@ Then pick **Solitaire Win** in System Settings → Screen Saver. **Options…** 
 | s | print seed |
 | p | save a PNG to the temp folder |
 
-Command-line arguments, for scripted checks: `-seed N -chaos X -force glitch,time -size 2560x1440 -fps YES -ff YES -snap DIR -snaps N -every SECONDS`.
+Command-line arguments, for scripted checks: `-seed N -chaos X -force glitch,time -effect "card cycle,rainbow cards" -effectat SECONDS -size 2560x1440 -fps YES -ff YES -drawn YES -list YES -snap DIR -snaps N -every SECONDS`.
+
+## Effects
+
+`docs/effects/index.html` lists every effect, how the chaos ramp works and how effects stack, with a small stack simulator. Its pictures are made by `scripts/effect-shots.sh` (Release harness build and ImageMagick needed) and are not in git.
+
+## Card art
+
+If `Resources/cards.png` is present (the original Windows deck as a 923×576 sprite sheet, 71×96 cells), the saver uses it; otherwise it uses the deck drawn in `Sources/CardArt.swift`. The sheet is not in git.
 
 ## Layout
 

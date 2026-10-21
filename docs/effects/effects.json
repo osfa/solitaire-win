@@ -1,0 +1,389 @@
+[
+  {
+    "durationMax" : 10,
+    "durationMin" : 3,
+    "family" : "time",
+    "hard" : false,
+    "minChaos" : 0,
+    "name" : "slow motion",
+    "weight" : 3
+  },
+  {
+    "durationMax" : 2.5,
+    "durationMin" : 0.29999999999999999,
+    "family" : "time",
+    "hard" : true,
+    "minChaos" : 0.10000000000000001,
+    "name" : "burst",
+    "weight" : 3
+  },
+  {
+    "durationMax" : 6,
+    "durationMin" : 2,
+    "family" : "time",
+    "hard" : true,
+    "minChaos" : 0.20000000000000001,
+    "name" : "stutter",
+    "weight" : 2
+  },
+  {
+    "durationMax" : 3,
+    "durationMin" : 0.69999999999999996,
+    "family" : "time",
+    "hard" : true,
+    "minChaos" : 0.40000000000000002,
+    "name" : "rewind",
+    "weight" : 1.5
+  },
+  {
+    "durationMax" : 12,
+    "durationMin" : 4,
+    "family" : "time",
+    "hard" : false,
+    "minChaos" : 0.29999999999999999,
+    "name" : "lurch",
+    "weight" : 1.5
+  },
+  {
+    "durationMax" : 4,
+    "durationMin" : 1,
+    "family" : "time",
+    "hard" : true,
+    "minChaos" : 0.29999999999999999,
+    "name" : "hang",
+    "weight" : 1
+  },
+  {
+    "durationMax" : 20,
+    "durationMin" : 6,
+    "family" : "colour",
+    "hard" : false,
+    "minChaos" : 0.050000000000000003,
+    "name" : "hue cycle",
+    "weight" : 3
+  },
+  {
+    "durationMax" : 15,
+    "durationMin" : 4,
+    "family" : "colour",
+    "hard" : false,
+    "minChaos" : 0.25,
+    "name" : "palette cycle",
+    "weight" : 2
+  },
+  {
+    "durationMax" : 25,
+    "durationMin" : 8,
+    "family" : "colour",
+    "hard" : false,
+    "minChaos" : 0.050000000000000003,
+    "name" : "felt drift",
+    "weight" : 2
+  },
+  {
+    "durationMax" : 3,
+    "durationMin" : 0.5,
+    "family" : "colour",
+    "hard" : true,
+    "minChaos" : 0.29999999999999999,
+    "name" : "invert flash",
+    "weight" : 1.5
+  },
+  {
+    "durationMax" : 6,
+    "durationMin" : 1,
+    "family" : "colour",
+    "hard" : false,
+    "minChaos" : 0.14999999999999999,
+    "name" : "rgb split",
+    "weight" : 2
+  },
+  {
+    "durationMax" : 14,
+    "durationMin" : 5,
+    "family" : "colour",
+    "hard" : false,
+    "minChaos" : 0.20000000000000001,
+    "name" : "rainbow cards",
+    "weight" : 1.2
+  },
+  {
+    "durationMax" : 12,
+    "durationMin" : 4,
+    "family" : "colour",
+    "hard" : true,
+    "minChaos" : 0.29999999999999999,
+    "name" : "negative",
+    "weight" : 0.080000000000000002
+  },
+  {
+    "durationMax" : 15,
+    "durationMin" : 6,
+    "family" : "colour",
+    "hard" : false,
+    "minChaos" : 0.20000000000000001,
+    "name" : "phosphor",
+    "weight" : 0.10000000000000001
+  },
+  {
+    "durationMax" : 15,
+    "durationMin" : 5,
+    "family" : "colour",
+    "hard" : false,
+    "minChaos" : 0.14999999999999999,
+    "name" : "greyscale",
+    "weight" : 0.12
+  },
+  {
+    "durationMax" : 10,
+    "durationMin" : 4,
+    "family" : "colour",
+    "hard" : true,
+    "minChaos" : 0.34999999999999998,
+    "name" : "CGA",
+    "weight" : 0.080000000000000002
+  },
+  {
+    "durationMax" : 12,
+    "durationMin" : 4,
+    "family" : "path",
+    "hard" : false,
+    "minChaos" : 0.10000000000000001,
+    "name" : "sideways gravity",
+    "weight" : 2
+  },
+  {
+    "durationMax" : 6,
+    "durationMin" : 2,
+    "family" : "path",
+    "hard" : false,
+    "minChaos" : 0.34999999999999998,
+    "name" : "gravity flip",
+    "weight" : 1.5
+  },
+  {
+    "durationMax" : 15,
+    "durationMin" : 5,
+    "family" : "path",
+    "hard" : false,
+    "minChaos" : 0.29999999999999999,
+    "name" : "orbit",
+    "weight" : 1.5
+  },
+  {
+    "durationMax" : 12,
+    "durationMin" : 4,
+    "family" : "path",
+    "hard" : false,
+    "minChaos" : 0.10000000000000001,
+    "name" : "sine wave",
+    "weight" : 2
+  },
+  {
+    "durationMax" : 10,
+    "durationMin" : 4,
+    "family" : "path",
+    "hard" : false,
+    "minChaos" : 0.25,
+    "name" : "homing",
+    "weight" : 1.5
+  },
+  {
+    "durationMax" : 20,
+    "durationMin" : 8,
+    "family" : "path",
+    "hard" : true,
+    "minChaos" : 0.20000000000000001,
+    "name" : "walls",
+    "weight" : 2
+  },
+  {
+    "durationMax" : 10,
+    "durationMin" : 3,
+    "family" : "path",
+    "hard" : false,
+    "minChaos" : 0.14999999999999999,
+    "name" : "drunk",
+    "weight" : 1.5
+  },
+  {
+    "durationMax" : 15,
+    "durationMin" : 5,
+    "family" : "physics",
+    "hard" : false,
+    "minChaos" : 0.14999999999999999,
+    "name" : "super bounce",
+    "weight" : 2
+  },
+  {
+    "durationMax" : 10,
+    "durationMin" : 4,
+    "family" : "physics",
+    "hard" : false,
+    "minChaos" : 0.10000000000000001,
+    "name" : "dead bounce",
+    "weight" : 1.5
+  },
+  {
+    "durationMax" : 10,
+    "durationMin" : 3,
+    "family" : "physics",
+    "hard" : false,
+    "minChaos" : 0.20000000000000001,
+    "name" : "zero g",
+    "weight" : 1.5
+  },
+  {
+    "durationMax" : 10,
+    "durationMin" : 4,
+    "family" : "physics",
+    "hard" : true,
+    "minChaos" : 0.34999999999999998,
+    "name" : "split",
+    "weight" : 1.5
+  },
+  {
+    "durationMax" : 8,
+    "durationMin" : 2,
+    "family" : "physics",
+    "hard" : true,
+    "minChaos" : 0.40000000000000002,
+    "name" : "teleport",
+    "weight" : 1
+  },
+  {
+    "durationMax" : 12,
+    "durationMin" : 4,
+    "family" : "physics",
+    "hard" : false,
+    "minChaos" : 0.20000000000000001,
+    "name" : "resize",
+    "weight" : 1.5
+  },
+  {
+    "durationMax" : 20,
+    "durationMin" : 6,
+    "family" : "physics",
+    "hard" : true,
+    "minChaos" : 0.29999999999999999,
+    "name" : "crowd",
+    "weight" : 1.5
+  },
+  {
+    "durationMax" : 6,
+    "durationMin" : 1,
+    "family" : "glitch",
+    "hard" : true,
+    "minChaos" : 0.25,
+    "name" : "wrong card",
+    "weight" : 2
+  },
+  {
+    "durationMax" : 4,
+    "durationMin" : 0.5,
+    "family" : "glitch",
+    "hard" : true,
+    "minChaos" : 0.40000000000000002,
+    "name" : "bad stride",
+    "weight" : 2
+  },
+  {
+    "durationMax" : 2,
+    "durationMin" : 0.29999999999999999,
+    "family" : "glitch",
+    "hard" : true,
+    "minChaos" : 0.34999999999999998,
+    "name" : "slices",
+    "weight" : 2
+  },
+  {
+    "durationMax" : 0.20000000000000001,
+    "durationMin" : 0.10000000000000001,
+    "family" : "glitch",
+    "hard" : true,
+    "minChaos" : 0.29999999999999999,
+    "name" : "erase band",
+    "weight" : 1.5
+  },
+  {
+    "durationMax" : 8,
+    "durationMin" : 2,
+    "family" : "glitch",
+    "hard" : false,
+    "minChaos" : 0.29999999999999999,
+    "name" : "scroll",
+    "weight" : 1.5
+  },
+  {
+    "durationMax" : 5,
+    "durationMin" : 1,
+    "family" : "glitch",
+    "hard" : false,
+    "minChaos" : 0.5,
+    "name" : "melt",
+    "weight" : 1
+  },
+  {
+    "durationMax" : 0.20000000000000001,
+    "durationMin" : 0.10000000000000001,
+    "family" : "glitch",
+    "hard" : true,
+    "minChaos" : 0.29999999999999999,
+    "name" : "card burst",
+    "weight" : 1.5
+  },
+  {
+    "durationMax" : 20,
+    "durationMin" : 8,
+    "family" : "glitch",
+    "hard" : true,
+    "minChaos" : 0.25,
+    "name" : "wrong launch",
+    "weight" : 1.5
+  },
+  {
+    "durationMax" : 10,
+    "durationMin" : 3,
+    "family" : "glitch",
+    "hard" : false,
+    "minChaos" : 0.20000000000000001,
+    "name" : "flip to back",
+    "weight" : 1.5
+  },
+  {
+    "durationMax" : 4,
+    "durationMin" : 0.5,
+    "family" : "glitch",
+    "hard" : true,
+    "minChaos" : 0.20000000000000001,
+    "name" : "tear",
+    "weight" : 2
+  },
+  {
+    "durationMax" : 10,
+    "durationMin" : 3,
+    "family" : "glitch",
+    "hard" : true,
+    "minChaos" : 0.25,
+    "name" : "card cycle",
+    "weight" : 1.2
+  },
+  {
+    "durationMax" : 8,
+    "durationMin" : 3,
+    "family" : "glitch",
+    "hard" : true,
+    "minChaos" : 0.5,
+    "name" : "upside down",
+    "weight" : 0.059999999999999998
+  },
+  {
+    "durationMax" : 8,
+    "durationMin" : 3,
+    "family" : "glitch",
+    "hard" : true,
+    "minChaos" : 0.40000000000000002,
+    "name" : "mirror",
+    "weight" : 0.059999999999999998
+  }
+]

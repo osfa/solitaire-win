@@ -15,6 +15,7 @@ private struct CanvasUniforms {
 
 private struct PostUniforms {
     var texW, texH, time, seed, hue, paletteMix, paletteShift, invert, split, tear, feltMix, ftR, ftG, ftB, pixelScale: Float
+    var tintMix, tintR, tintG, tintB, grey, cga, flipX, flipY: Float
     var pad: Float = 0
 }
 
@@ -126,7 +127,9 @@ final class Renderer {
                                 paletteShift: Float(max(0, look.paletteShift)), invert: Float(look.invert),
                                 split: Float(look.rgbSplit) * ps, tear: Float(look.tear), feltMix: Float(look.feltMix),
                                 ftR: Float(look.feltTint.x), ftG: Float(look.feltTint.y), ftB: Float(look.feltTint.z),
-                                pixelScale: ps)
+                                pixelScale: ps, tintMix: Float(look.tintMix), tintR: Float(look.tint.x),
+                                tintG: Float(look.tint.y), tintB: Float(look.tint.z), grey: Float(look.grey),
+                                cga: Float(look.cga), flipX: look.flipX ? 1 : 0, flipY: look.flipY ? 1 : 0)
         encodePost(cmd, target: drawable.texture, &post)
 
         var snap: (MTLTexture, URL)?

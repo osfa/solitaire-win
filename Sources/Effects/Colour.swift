@@ -31,6 +31,32 @@ extension EffectSpec {
             let amount = lerp(1, 12, s.intensity)
             return { p, k in p.look.rgbSplit += k.env * amount * (0.6 + 0.4 * sin(k.t * 7)) }
         },
+        EffectSpec(name: "rainbow cards", family: .colour, minChaos: 0.2, weight: 1.2, duration: 5...14) { s in
+            let speed = lerp(0.02, 0.15, s.intensity)
+            return { p, k in
+                p.physics.rainbow = max(p.physics.rainbow, k.env)
+                p.physics.rainbowSpeed = speed
+            }
+        },
+
+        // Rare.
+        EffectSpec(name: "negative", family: .colour, minChaos: 0.3, weight: 0.08, duration: 4...12, hard: true) { _ in
+            { p, _ in p.look.invert = 1 - p.look.invert }
+        },
+        EffectSpec(name: "phosphor", family: .colour, minChaos: 0.2, weight: 0.1, duration: 6...15) { s in
+            let tints: [SIMD3<Double>] = [SIMD3(1, 0.68, 0.1), SIMD3(0.25, 1, 0.3), SIMD3(0.45, 0.75, 1)]
+            let tint = tints[s.rng.int(tints.count)]
+            return { p, k in
+                p.look.tintMix = max(p.look.tintMix, k.env)
+                p.look.tint = tint
+            }
+        },
+        EffectSpec(name: "greyscale", family: .colour, minChaos: 0.15, weight: 0.12, duration: 5...15) { _ in
+            { p, k in p.look.grey = max(p.look.grey, k.env) }
+        },
+        EffectSpec(name: "CGA", family: .colour, minChaos: 0.35, weight: 0.08, duration: 4...10, hard: true) { _ in
+            { p, _ in p.look.cga = 1 }
+        },
     ]
 }
 

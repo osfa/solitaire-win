@@ -58,5 +58,17 @@ extension EffectSpec {
         EffectSpec(name: "tear", family: .glitch, minChaos: 0.2, weight: 2, duration: 0.5...4, hard: true) { s in
             { p, _ in p.look.tear = max(p.look.tear, s.intensity) }
         },
+        EffectSpec(name: "card cycle", family: .glitch, minChaos: 0.25, weight: 1.2, duration: 3...10, hard: true) { s in
+            let rate = lerp(0.1, 1, s.intensity)
+            return { p, _ in p.physics.cardCycle = rate }
+        },
+
+        // Rare.
+        EffectSpec(name: "upside down", family: .glitch, minChaos: 0.5, weight: 0.06, duration: 3...8, hard: true) { _ in
+            { p, _ in p.look.flipY.toggle() }
+        },
+        EffectSpec(name: "mirror", family: .glitch, minChaos: 0.4, weight: 0.06, duration: 3...8, hard: true) { _ in
+            { p, _ in p.look.flipX.toggle() }
+        },
     ]
 }
