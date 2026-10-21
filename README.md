@@ -1,8 +1,8 @@
 # Solitaire Win
 
-A macOS screensaver: the Windows Solitaire win screen, cards bouncing off the foundations and leaving trails. It starts faithful. After a minute or so it begins to go wrong (slow motion, bursts of speed, colour cycling, odd paths, broken physics, corrupted drawing), gets worse until it is fully broken, then "reboots" and starts drifting again.
+A screensaver for the Macintosh. It shows the screen that appears when a game of Windows Solitaire is won: the cards leave the foundations one at a time, bounce along the bottom of the screen and leave a copy of themselves at every step.
 
-**[Download and install](https://osfa.github.io/solitaire-win/)** · **[Run it in the browser](https://osfa.github.io/solitaire-win/demo/)** · **[Every effect](https://osfa.github.io/solitaire-win/effects/)**
+**[Download and install](https://osfa.github.io/solitaire-win/)** · **[Run it in the browser](https://osfa.github.io/solitaire-win/demo/)** · **[Technical notes](https://osfa.github.io/solitaire-win/effects/)**
 
 ## Install
 
@@ -17,7 +17,7 @@ A macOS screensaver: the Windows Solitaire win screen, cards bouncing off the fo
 
 Needs macOS 13 or later, on Apple silicon or Intel.
 
-**Options…** sets how many minutes until it is fully broken, how broken it gets, which kinds of trouble are allowed, whether to start already broken, and whether to use the code-drawn deck instead of the original cards.
+Further settings are under **Options…**, including a choice between the original cards and a deck drawn in code.
 
 ## Build from source
 
