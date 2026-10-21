@@ -2,7 +2,7 @@
 
 A macOS screensaver: the Windows Solitaire win screen, cards bouncing off the foundations and leaving trails. It starts faithful. After a minute or so it begins to go wrong (slow motion, bursts of speed, colour cycling, odd paths, broken physics, corrupted drawing), gets worse until it is fully broken, then "reboots" and starts drifting again.
 
-**[Download and install](https://osfa.github.io/solitaire-win/)** · **[Every effect](https://osfa.github.io/solitaire-win/effects/)**
+**[Download and install](https://osfa.github.io/solitaire-win/)** · **[Run it in the browser](https://osfa.github.io/solitaire-win/demo/)** · **[Every effect](https://osfa.github.io/solitaire-win/effects/)**
 
 ## Install
 
@@ -53,7 +53,7 @@ Command-line arguments, for scripted checks: `-seed N -chaos X -force glitch,tim
 - `Sources/Effects/` — the effects, one file per kind. Each one changes a copy of `Params` every frame.
 - `Sources/Renderer.swift`, `Sources/Shaders.swift` — Metal: a canvas that is never cleared, card stamps, canvas glitches, screen effects.
 - `Sources/CardArt.swift` — a fallback deck drawn pixel by pixel at the original 71×96.
-- `docs/` — the download page and the effects catalogue. `scripts/effect-shots.sh` renders the catalogue's pictures.
+- `docs/` — the download page, the effects catalogue, and `docs/demo/`, a WebGL2 port of the saver in plain JavaScript (`?warmup=SECONDS`, `?effect=name,name`, `?chaos=X`, `?fast` help testing). `scripts/effect-shots.sh` renders the catalogue's pictures.
 
 ## Credits
 

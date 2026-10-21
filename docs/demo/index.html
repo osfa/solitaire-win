@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Solitaire Win Demonstration</title>
+<meta name="description" content="The Solitaire Win screensaver, running in a web browser.">
+<style>
+  /* 1995: one centred column, system grey, Times, Windows 95 bevels around a 640×480 window. */
+  @font-face { font-family: "W95FA"; src: url("../fonts/w95fa.woff2") format("woff2"); font-display: swap; }
+  :root {
+    --grey: #c0c0c0; --hi: #ffffff; --lo: #808080; --dark: #000000; --navy: #000080;
+    --serif: "Times New Roman", Times, serif;
+    /* W95FA has one weight and a clean pixel grid at 11, 16 and 22 px; never bold it. */
+    --ui: "W95FA", "MS Sans Serif", "Microsoft Sans Serif", Tahoma, Geneva, sans-serif;
+    color-scheme: light;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--grey); color: var(--dark); font: 16px/1.35 var(--serif); -webkit-font-smoothing: none; }
+  .page {
+    max-width: 680px; margin: 0 auto; display: grid; gap: 14px;
+    padding-left: max(12px, env(safe-area-inset-left, 0px));
+    padding-right: max(12px, env(safe-area-inset-right, 0px));
+    padding-block: 16px 40px;
+  }
+  a { color: #0000ee; }
+  a:visited { color: #551a8b; }
+  h1 { font-size: 2rem; margin: 0; }
+  p { margin: 0; }
+  code, kbd { font-family: "Courier New", Courier, monospace; }
+  hr { border: 0; border-top: 1px solid var(--lo); border-bottom: 1px solid var(--hi); margin: 6px 0; width: 100%; }
+
+  .window { background: var(--grey); border: 2px solid; border-color: var(--hi) var(--dark) var(--dark) var(--hi);
+            box-shadow: inset -1px -1px var(--lo), inset 1px 1px #dfdfdf; padding: 3px; width: 100%; max-width: 652px; }
+  .titlebar { background: var(--navy); color: var(--hi); font: 16px/1 var(--ui); padding: 4px 4px 4px 6px;
+              display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+  .titlebar .controls { display: flex; gap: 2px; }
+  .titlebar .controls span { width: 16px; height: 14px; background: var(--grey); color: var(--dark); font: 11px/12px var(--ui);
+                             text-align: center; border: 1px solid; border-color: var(--hi) var(--dark) var(--dark) var(--hi); }
+  .screen { display: block; width: 100%; aspect-ratio: 4 / 3; background: #008000; border: 2px inset var(--grey); margin-top: 2px; }
+  .screen:fullscreen { border: 0; aspect-ratio: auto; width: 100vw; height: 100vh; }
+  .toolbar { display: flex; flex-wrap: wrap; gap: 4px; padding: 4px 0; }
+  .status { font: 16px/1 var(--ui); padding: 4px 6px; border: 1px solid; border-color: var(--lo) var(--hi) var(--hi) var(--lo);
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  button {
+    font: 16px var(--ui); color: var(--dark); background: var(--grey); cursor: pointer; padding: 4px 12px;
+    border: 2px solid; border-color: var(--hi) var(--dark) var(--dark) var(--hi); box-shadow: inset -1px -1px var(--lo), inset 1px 1px #dfdfdf;
+  }
+  button:active, button[aria-pressed="true"] { border-color: var(--dark) var(--hi) var(--hi) var(--dark); box-shadow: inset 1px 1px var(--lo); background: #d4d4d4; }
+  button:focus-visible { outline: 1px dotted var(--dark); outline-offset: -5px; }
+  .error { background: var(--hi); border: 2px inset var(--grey); padding: 8px; }
+  table.keys { border-collapse: separate; border-spacing: 2px; border: 2px outset var(--grey); font-size: 0.95rem; }
+  table.keys td { border: 1px inset var(--grey); padding: 2px 8px; }
+  footer { font-size: 13px; }
+</style>
+</head>
+<body>
+<div class="page">
+  <p><a href="../">Solitaire Win</a> › Demonstration</p>
+  <h1>Demonstration</h1>
+  <p>This is the screensaver running in the browser, using WebGL. It is the same program, rewritten for the web. It behaves as the installed version does, and changes over the first ten minutes or so.</p>
+
+  <div class="window">
+    <div class="titlebar"><span>Solitaire Win</span><span class="controls" aria-hidden="true"><span>_</span><span>□</span><span>×</span></span></div>
+    <canvas class="screen" id="screen" tabindex="0" aria-label="The Solitaire Win screensaver"></canvas>
+    <div class="toolbar">
+      <button type="button" id="full">Full Screen</button>
+      <button type="button" id="pause" aria-pressed="false">Pause</button>
+      <button type="button" id="fast" aria-pressed="false">Speed Up Time</button>
+      <button type="button" id="restart">Restart</button>
+    </div>
+    <div class="status" id="status" role="status">Loading…</div>
+  </div>
+
+  <div class="error" id="error" hidden></div>
+
+  <hr>
+
+  <p>Keys, with the screen selected:</p>
+  <table class="keys">
+    <tr><td><kbd>Space</kbd></td><td>Pause</td></tr>
+    <tr><td><kbd>1</kbd> to <kbd>5</kbd></td><td>Start something now</td></tr>
+    <tr><td><kbd>+</kbd> / <kbd>−</kbd></td><td>Set the chaos level by hand; <kbd>A</kbd> returns it to automatic</td></tr>
+    <tr><td><kbd>F</kbd></td><td>Speed up time ×10</td></tr>
+    <tr><td><kbd>R</kbd></td><td>Reboot</td></tr>
+  </table>
+
+  <p>To install the screensaver on a Mac, see the <a href="../">download page</a>.</p>
+
+  <footer>Card art is from Microsoft Windows Solitaire. This page is not affiliated with or endorsed by Microsoft.</footer>
+</div>
+<script type="module">
+  import { start } from "./solitaire.js";
+  const screen = document.getElementById("screen"), status = document.getElementById("status");
+  const controls = await start(screen, {
+    status,
+    onError(e) {
+      status.textContent = "Not running";
+      const box = document.getElementById("error");
+      box.textContent = "The demonstration could not start: " + e.message + " It needs a browser with WebGL 2.";
+      box.hidden = false;
+    },
+  });
+  if (controls) {
+    const pause = document.getElementById("pause"), fast = document.getElementById("fast");
+    const sync = () => pause.setAttribute("aria-pressed", status.textContent.startsWith("Paused"));
+    document.getElementById("full").addEventListener("click", () => screen.requestFullscreen?.().catch(() => {}));
+    pause.addEventListener("click", () => { controls.togglePause(); setTimeout(sync, 50); });
+    fast.addEventListener("click", () => fast.setAttribute("aria-pressed", controls.toggleFast()));
+    document.getElementById("restart").addEventListener("click", controls.restart);
+    screen.addEventListener("keydown", e => {
+      if (controls.key(e.key.toLowerCase())) { e.preventDefault(); sync(); fast.setAttribute("aria-pressed", status.textContent.includes("×10")); }
+    });
+  }
+</script>
+</body>
+</html>
