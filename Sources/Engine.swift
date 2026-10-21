@@ -31,8 +31,9 @@ final class Engine {
     static let maxStamps = 40_000
     /// Flying-card stamps per frame before intermediate steps stop leaving stamps.
     static let stampBudget = 900
-    /// Physics steps (and trail copies) per second at normal speed, measured from the original at about 150–200.
-    static let stepsPerSecond = 160.0
+    /// Physics steps (and trail copies) per second at normal speed. The original's sideways speeds bunch at
+    /// multiples of about 150 px/s, i.e. whole pixels per step at this rate.
+    static let stepsPerSecond = 150.0
     static let stockSlot = 62
     /// Launch velocities in card px/s (y down), measured from 43 cards in a recording of the original.
     /// Three in four go left, and some start downwards.
@@ -144,9 +145,13 @@ final class Engine {
             let i = nextPile
             nextPile = (nextPile + 1) % 4
             guard let card = piles[i].popLast() else { continue }
-            let pos = rng.chance(p.wrongLaunch) ? randomSpot() : pilePos(i)
-            let launch = Self.launches[rng.int(Self.launches.count)] * rng.range(0.9...1.1)
-            return Flyer(card: card, pos: pos, vel: launch / 60)
+            // A whole number of pixels per step keeps the copies evenly spaced; fractional steps band.
+            // Starting half a pixel in keeps rounding away from the pixel edges.
+            let pos = (rng.chance(p.wrongLaunch) ? randomSpot() : pilePos(i)).rounded(.down) + 0.5
+            let launch = Self.launches[rng.int(Self.launches.count)]
+            let dx = max(1, (abs(launch.x) / Self.stepsPerSecond).rounded()) * (launch.x < 0 ? -1 : 1)
+            let vy = launch.y * rng.range(0.9...1.1)
+            return Flyer(card: card, pos: pos, vel: SIMD2(dx * Self.stepsPerSecond, vy) / 60)
         }
         return nil
     }
