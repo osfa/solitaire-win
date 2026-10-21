@@ -17,8 +17,6 @@ struct Flyer {
     var stall = 0.0
     /// Atlas cell of the back it shows instead of its face.
     var back: Int?
-    /// The foundation this card left, until it has moved clear of it.
-    var pile: Int?
     /// Extra cards from glitches; they don't come from a foundation.
     var ghost = false
 }
@@ -62,7 +60,6 @@ final class Engine {
         roundPause = nil
         wipe = true
         stamps = []
-        for i in 0..<4 { stamp(card: piles[i].last!, at: pilePos(i), scale: 1) }
     }
 
     func clearOutput() {
@@ -116,7 +113,7 @@ final class Engine {
             nextPile = (nextPile + 1) % 4
             guard let card = piles[i].popLast() else { continue }
             let pos = rng.chance(p.wrongLaunch) ? randomSpot() : pilePos(i)
-            return Flyer(card: card, pos: pos, vel: SIMD2(rng.range(2...7) * rng.sign(), -rng.range(0...8)), pile: i)
+            return Flyer(card: card, pos: pos, vel: SIMD2(rng.range(2...7) * rng.sign(), -rng.range(0...8)))
         }
         return nil
     }
@@ -168,7 +165,6 @@ final class Engine {
                         for _ in 0..<p.splitOnBounce where flyers.count + spawned.count < Self.maxFlyers {
                             var c = f
                             c.ghost = true
-                            c.pile = nil
                             c.vel = SIMD2(rng.range(-8...8), f.vel.y * rng.range(0.5...1.2))
                             spawned.append(c)
                         }
@@ -199,19 +195,10 @@ final class Engine {
 
             if stamping { stamp(card: f.back ?? f.card, at: f.pos, scale: p.cardScale) }
 
-            if let pile = f.pile, !overlaps(f.pos, cs, pilePos(pile), Self.cardSize) {
-                if let top = piles[pile].last { stamp(card: top, at: pilePos(pile), scale: 1) }
-                f.pile = nil
-            }
-
             let gone = f.pos.x + cs.x < -1 || f.pos.x > size.x + 1 || f.pos.y > size.y + 2000 || f.pos.y < -3000
             if !gone || p.walls { keep.append(f) }
         }
         flyers = keep + spawned
-    }
-
-    private func overlaps(_ a: SIMD2<Double>, _ asz: SIMD2<Double>, _ b: SIMD2<Double>, _ bsz: SIMD2<Double>) -> Bool {
-        a.x < b.x + bsz.x && b.x < a.x + asz.x && a.y < b.y + bsz.y && b.y < a.y + asz.y
     }
 
     private func stamp(card: Int, at pos: SIMD2<Double>, scale: Double) {
