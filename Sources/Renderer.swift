@@ -93,8 +93,9 @@ final class Renderer {
 
     func render(in view: MTKView, engine: Engine, params: Params, dt: Double) {
         // MTKView.currentDrawable only refreshes inside MTKView.draw(), which we never call.
-        guard let layer = view.layer as? CAMetalLayer, let drawable = layer.nextDrawable(), canvas != nil,
-              let cmd = queue.makeCommandBuffer() else { return }
+        // No drawable while the window is hidden; keep drawing the canvas so trails and snapshots continue.
+        guard canvas != nil, let cmd = queue.makeCommandBuffer() else { return }
+        let drawable = (view.layer as? CAMetalLayer)?.nextDrawable()
         time += dt
         let look = params.look
 
@@ -130,7 +131,7 @@ final class Renderer {
                                 pixelScale: ps, tintMix: Float(look.tintMix), tintR: Float(look.tint.x),
                                 tintG: Float(look.tint.y), tintB: Float(look.tint.z), grey: Float(look.grey),
                                 cga: Float(look.cga), flipX: look.flipX ? 1 : 0, flipY: look.flipY ? 1 : 0)
-        encodePost(cmd, target: drawable.texture, &post)
+        if let drawable { encodePost(cmd, target: drawable.texture, &post) }
 
         var snap: (MTLTexture, URL)?
         if let url = snapshotRequest {
@@ -149,7 +150,7 @@ final class Renderer {
             }
         }
 
-        cmd.present(drawable)
+        if let drawable { cmd.present(drawable) }
         cmd.commit()
         if let (t, url) = snap {
             cmd.waitUntilCompleted()
