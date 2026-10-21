@@ -33,6 +33,19 @@ final class Engine {
     static let stampBudget = 900
     /// Physics steps (and trail copies) per second at normal speed, measured from the original at about 150–200.
     static let stepsPerSecond = 160.0
+    static let stockSlot = 62
+    /// Launch velocities in card px/s (y down), measured from 43 cards in a recording of the original.
+    /// Three in four go left, and some start downwards.
+    static let launches: [SIMD2<Double>] = [
+        SIMD2(-745, -392), SIMD2(103, -883), SIMD2(-290, -22), SIMD2(-290, -197), SIMD2(-290, 240), SIMD2(-290, 256),
+        SIMD2(579, -666), SIMD2(-310, -484), SIMD2(-290, 440), SIMD2(248, 0), SIMD2(-290, -365), SIMD2(-290, -218),
+        SIMD2(310, 181), SIMD2(-310, 280), SIMD2(-559, 191), SIMD2(207, -79), SIMD2(-910, -265), SIMD2(-703, 471),
+        SIMD2(-600, -416), SIMD2(-290, 226), SIMD2(-786, 0), SIMD2(-559, -520), SIMD2(-290, 361), SIMD2(-745, -288),
+        SIMD2(-310, 300), SIMD2(166, 0), SIMD2(-290, -380), SIMD2(-848, 341), SIMD2(-269, -9), SIMD2(331, -340),
+        SIMD2(-621, 0), SIMD2(-248, -942), SIMD2(290, -67), SIMD2(-455, 602), SIMD2(-124, -720), SIMD2(290, -426),
+        SIMD2(-434, -100), SIMD2(434, -824), SIMD2(-259, -395), SIMD2(-331, 320), SIMD2(-310, 10), SIMD2(-745, 223),
+        SIMD2(-931, 631),
+    ]
 
     let rng: RNG
     private let backs: [Int]
@@ -65,6 +78,7 @@ final class Engine {
         roundPause = nil
         wipe = true
         stamps = []
+        stamp(card: Self.stockSlot, at: SIMD2(columnX(0), 6), scale: 1)
         for i in 0..<4 { stamp(card: piles[i].last!, at: pilePos(i), scale: 1) }
     }
 
@@ -74,10 +88,13 @@ final class Engine {
         wipe = false
     }
 
-    func pilePos(_ i: Int) -> SIMD2<Double> {
-        let gap = (size.x - 12 - Self.cardSize.x) / 6
-        return SIMD2(6 + Double(i + 3) * gap, 6)
+    /// Seven columns with equal gaps and margins, as the original lays them out.
+    func columnX(_ col: Int) -> Double {
+        let gap = (size.x - 7 * Self.cardSize.x) / 8
+        return gap + Double(col) * (Self.cardSize.x + gap)
     }
+
+    func pilePos(_ i: Int) -> SIMD2<Double> { SIMD2(columnX(i + 3), 6) }
 
     func randomSpot() -> SIMD2<Double> {
         SIMD2(rng.range(0...max(1, size.x - Self.cardSize.x)), rng.range(0...max(1, size.y - Self.cardSize.y)))
@@ -119,7 +136,8 @@ final class Engine {
             nextPile = (nextPile + 1) % 4
             guard let card = piles[i].popLast() else { continue }
             let pos = rng.chance(p.wrongLaunch) ? randomSpot() : pilePos(i)
-            return Flyer(card: card, pos: pos, vel: SIMD2(rng.range(3...13) * rng.sign(), -rng.range(0...6)))
+            let launch = Self.launches[rng.int(Self.launches.count)] * rng.range(0.9...1.1)
+            return Flyer(card: card, pos: pos, vel: launch / 60)
         }
         return nil
     }

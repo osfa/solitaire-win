@@ -21,7 +21,7 @@ enum CardArt {
     /// The original deck as a sprite sheet (`cards.png`, 923×576) if bundled, otherwise the drawn deck.
     static func atlas(bundle: Bundle, preferDrawn: Bool) -> Atlas {
         if !preferDrawn, let sheet = loadSheet(bundle: bundle) { return sheet }
-        return Atlas(bytes: makeAtlas(), width: atlasW, height: atlasH, backs: Array(52..<65))
+        return Atlas(bytes: makeAtlas(), width: atlasW, height: atlasH, backs: Array(52..<62))
     }
 
     /// The sheet's background green shows through at card corners and in empty cells.
@@ -207,7 +207,8 @@ enum CardArt {
         for suit in 0..<4 {
             for rank in 0..<13 { atlas.blit(face(suit: suit, rank: rank), rank * cardW, suit * cardH) }
         }
-        for i in 0..<columns { atlas.blit(back(variant: i), i * cardW, 4 * cardH) }
+        for i in 0..<10 { atlas.blit(back(variant: i), i * cardW, 4 * cardH) }
+        for (i, mark) in [SlotMark.circle, .cross, .none].enumerated() { atlas.blit(slot(mark), (10 + i) * cardW, 4 * cardH) }
         var bytes = [UInt8]()
         bytes.reserveCapacity(atlasW * atlasH * 4)
         for c in atlas.px { bytes += [c.r, c.g, c.b, c.a] }
@@ -386,6 +387,29 @@ enum CardArt {
         s.outline(within: 0, 0, 44, 35)
         let pip = pips[suit]
         s.glyph(pip, 1 + (15 - pip[0].count) / 2, 1, ink)
+        return s
+    }
+
+    enum SlotMark { case circle, cross, none }
+
+    /// An empty pile on the felt, as in the sheet's cells 62–64: the stock shows a green ring.
+    static func slot(_ mark: SlotMark) -> Sprite {
+        var s = blank()
+        let felt = Color(r: 0, g: 128, b: 0)
+        s.rect(1, 1, cardW - 2, cardH - 2, felt)
+        for (x, y) in [(1, 1), (cardW - 2, 1), (1, cardH - 2), (cardW - 2, cardH - 2)] { s.set(x, y, black) }
+        for y in 0..<cardH {
+            for x in 0..<cardW {
+                let u = (Double(x) - 35) / 28, v = (Double(y) - 48) / 30.5
+                let r = (u * u + v * v).squareRoot()
+                switch mark {
+                case .circle where r <= 1 && r >= 0.77: s.set(x, y, Color(r: 0, g: 255, b: 0))
+                case .cross where abs(Double(x - 35) * 53 / 47 - Double(y - 47)) < 3.5 || abs(Double(35 - x) * 53 / 47 - Double(y - 47)) < 3.5:
+                    if x >= 12, x <= 59 { s.set(x, y, red) }
+                default: break
+                }
+            }
+        }
         return s
     }
 
