@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Solitaire Win</title>
+<meta name="description" content="A macOS screensaver: the Windows Solitaire win screen, which slowly starts to go wrong.">
+<meta property="og:title" content="Solitaire Win">
+<meta property="og:description" content="A macOS screensaver: the Windows Solitaire win screen, which slowly starts to go wrong.">
+<meta property="og:image" content="https://osfa.github.io/solitaire-win/effects/img/stack-cycle-rainbow.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Pixelify+Sans:wght@500;700&display=swap">
+<style>
+  /* Layout: one column; hero with the download, then a strip of broken frames, then install steps. */
+  :root {
+    --bg: #eef2ec; --surface: #ffffff; --ink: #142017; --muted: #556458; --line: #cad5cb;
+    --felt: #0b7a2a; --felt-ink: #ffffff; --red: #c4141a;
+    --display: "Pixelify Sans", "Courier New", monospace;
+    --body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #0c1610; --surface: #132119; --ink: #e5eee6; --muted: #93a598; --line: #263a2d;
+            --felt: #4cc271; --felt-ink: #0c1610; --red: #ff6461; color-scheme: dark; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.6 var(--body); }
+  img { max-width: 100%; }
+  .wrap {
+    max-width: 1080px; margin: 0 auto; display: grid; gap: 72px;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+    padding-block: 48px 72px;
+  }
+  h1, h2 { font-family: var(--display); font-weight: 700; line-height: 1.05; margin: 0; text-wrap: balance; }
+  h1 { font-size: clamp(2.8rem, 9vw, 5rem); }
+  h2 { font-size: clamp(1.6rem, 4vw, 2.2rem); }
+  p { margin: 0; }
+  a { color: var(--felt); }
+  code { font-family: var(--mono); font-size: 0.9em; }
+  .eyebrow { font: 500 0.78rem/1 var(--mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--felt); }
+  .muted { color: var(--muted); }
+
+  .hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); gap: 40px; align-items: center; }
+  .hero-text { display: grid; gap: 20px; }
+  .lead { font-size: 1.2rem; color: var(--muted); max-width: 46ch; }
+  .actions { display: flex; flex-wrap: wrap; gap: 12px 20px; align-items: center; }
+  .download {
+    display: inline-flex; align-items: center; gap: 10px; text-decoration: none;
+    font: 600 1.05rem var(--body); color: var(--felt-ink); background: var(--felt); padding: 13px 22px;
+  }
+  .download:hover { filter: brightness(1.08); }
+  .download:focus-visible, .copy:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+  .meta { font: 0.82rem var(--mono); color: var(--muted); }
+  .shot { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; image-rendering: pixelated;
+          border: 1px solid var(--line); background: #008000; }
+  @media (max-width: 760px) { .hero { grid-template-columns: 1fr; } }
+
+  section { display: grid; gap: 20px; }
+  .strip { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+  .strip figure { margin: 0; display: grid; gap: 6px; }
+  .strip figcaption { font-size: 0.85rem; color: var(--muted); }
+  .strip b { color: var(--ink); font-weight: 600; }
+  @media (max-width: 760px) { .strip { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 440px) { .strip { grid-template-columns: 1fr; } }
+
+  .steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 18px; max-width: 720px; counter-reset: step; }
+  .steps li { display: grid; grid-template-columns: 2.2rem minmax(0, 1fr); gap: 14px; counter-increment: step; }
+  .steps li::before {
+    content: counter(step); font: 700 1.1rem/2rem var(--display); text-align: center;
+    width: 2rem; height: 2rem; border: 1px solid var(--line); background: var(--surface);
+  }
+  .steps li > div { display: grid; gap: 8px; min-width: 0; padding-top: 3px; }
+  .cmd { display: flex; align-items: stretch; border: 1px solid var(--line); background: var(--surface); min-width: 0; }
+  .cmd code { flex: 1; padding: 10px 12px; overflow-x: auto; white-space: nowrap; }
+  .copy { font: 500 0.8rem var(--mono); border: 0; border-left: 1px solid var(--line); background: transparent; color: var(--ink);
+          padding: 0 14px; cursor: pointer; }
+  .copy:hover { background: var(--bg); }
+
+  footer { border-top: 1px solid var(--line); padding-top: 20px; font-size: 0.85rem; color: var(--muted); display: grid; gap: 6px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <div class="hero-text">
+      <span class="eyebrow">macOS screensaver</span>
+      <h1>Solitaire Win</h1>
+      <p class="lead">The Windows Solitaire win screen, faithful at first. After a minute or so it starts to go wrong, gets steadily worse, then reboots and does it again.</p>
+      <div class="actions">
+        <a class="download" href="https://github.com/osfa/solitaire-win/releases/latest/download/Solitaire-Win.zip">Download for Mac</a>
+        <a href="https://github.com/osfa/solitaire-win">Source on GitHub</a>
+      </div>
+      <p class="meta">macOS 13 or later · Apple silicon and Intel · free</p>
+    </div>
+    <img class="shot" src="effects/img/normal.jpg" alt="Green felt with cards bouncing off the bottom edge, each leaving a dense trail of copies.">
+  </header>
+
+  <section aria-labelledby="breaks">
+    <span class="eyebrow">Then it breaks</span>
+    <h2 id="breaks">43 ways to go wrong</h2>
+    <div class="strip">
+      <figure><img class="shot" src="effects/img/stack-cycle-rainbow.jpg" alt="Trails flickering through many card faces in rainbow colours." loading="lazy"><figcaption><b>Card cycle + rainbow</b>, two effects stacked</figcaption></figure>
+      <figure><img class="shot" src="effects/img/bad-stride.jpg" alt="Card images sheared into diagonal smears." loading="lazy"><figcaption><b>Bad stride</b>: cards copied with the wrong row width</figcaption></figure>
+      <figure><img class="shot" src="effects/img/orbit.jpg" alt="Card trails curving around a point." loading="lazy"><figcaption><b>Orbit</b>: gravity pulls to a point instead</figcaption></figure>
+      <figure><img class="shot" src="effects/img/negative.jpg" alt="The win screen in negative colours." loading="lazy"><figcaption><b>Negative</b>, one of six rare effects</figcaption></figure>
+      <figure><img class="shot" src="effects/img/slices.jpg" alt="Bands of the trails shifted sideways." loading="lazy"><figcaption><b>Slices</b>: bands of trail jump sideways</figcaption></figure>
+      <figure><img class="shot" src="effects/img/phosphor.jpg" alt="The screen as a one-colour monitor." loading="lazy"><figcaption><b>Phosphor</b>: an old one-colour monitor</figcaption></figure>
+    </div>
+    <p><a href="effects/">See every effect, how chaos builds up, and how effects stack →</a></p>
+  </section>
+
+  <section aria-labelledby="install">
+    <span class="eyebrow">Install</span>
+    <h2 id="install">Installing</h2>
+    <ol class="steps">
+      <li><div><p><a href="https://github.com/osfa/solitaire-win/releases/latest/download/Solitaire-Win.zip">Download Solitaire-Win.zip</a> and unzip it.</p></div></li>
+      <li><div>
+        <p>It isn't notarised by Apple, so macOS will block it at first. Clear the download flag in Terminal:</p>
+        <div class="cmd"><code id="xattr">xattr -dr com.apple.quarantine ~/Downloads/"Solitaire Win.saver"</code><button class="copy" type="button" data-copy="xattr">Copy</button></div>
+        <p class="muted">Or double-click it, and when macOS refuses, open System Settings → Privacy &amp; Security and click <b>Open Anyway</b>.</p>
+      </div></li>
+      <li><div><p>Double-click <b>Solitaire Win.saver</b> and choose to install it.</p></div></li>
+      <li><div><p>Pick <b>Solitaire Win</b> in System Settings → Screen Saver. <b>Options…</b> sets how fast it breaks, how far, and which kinds of trouble are allowed.</p></div></li>
+    </ol>
+  </section>
+
+  <footer>
+    <p>Made by <a href="https://github.com/osfa">osfa</a>. Source code under the MIT licence.</p>
+    <p>Card art is from Microsoft Windows Solitaire. This project is not affiliated with or endorsed by Microsoft.</p>
+  </footer>
+</div>
+<script>
+  document.querySelectorAll(".copy").forEach(b => b.addEventListener("click", async () => {
+    const text = document.getElementById(b.dataset.copy).textContent;
+    try { await navigator.clipboard.writeText(text); b.textContent = "Copied"; }
+    catch { getSelection().selectAllChildren(document.getElementById(b.dataset.copy)); b.textContent = "Selected"; }
+    setTimeout(() => b.textContent = "Copy", 1600);
+  }));
+</script>
+</body>
+</html>

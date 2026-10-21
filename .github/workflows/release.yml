@@ -1,0 +1,29 @@
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - run: brew install xcodegen
+      - run: xcodegen generate
+      - name: Build
+        run: |
+          xcodebuild -project SolitaireSaver.xcodeproj -scheme SolitaireSaver -configuration Release \
+            -destination 'generic/platform=macOS' -derivedDataPath build \
+            MARKETING_VERSION="${GITHUB_REF_NAME#v}" build
+      - name: Package
+        run: |
+          cd build/Build/Products/Release
+          ditto -c -k --keepParent "Solitaire Win.saver" "$GITHUB_WORKSPACE/Solitaire-Win.zip"
+      - name: Publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "$GITHUB_REF_NAME" Solitaire-Win.zip --title "Solitaire Win $GITHUB_REF_NAME" --generate-notes

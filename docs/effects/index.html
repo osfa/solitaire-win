@@ -1,5 +1,9 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Solitaire Win Effects</title>
-<meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Pixelify+Sans:wght@500;700&display=swap">
@@ -38,7 +42,11 @@
     color-scheme: dark;
   }
 
-  body { background: var(--bg); color: var(--ink); font: 16px/1.6 var(--body); }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.6 var(--body); }
+  img { max-width: 100%; }
+  [hidden] { display: none !important; }
+  .back { font: 500 0.85rem var(--mono); color: var(--felt); }
   .wrap {
     max-width: 1180px; margin: 0 auto;
     padding-left: max(16px, env(safe-area-inset-left, 0px));
@@ -130,8 +138,11 @@
   @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto; } }
 </style>
 
+</head>
+<body>
 <div class="wrap">
   <header>
+    <a class="back" href="../">← Solitaire Win download</a>
     <div class="hero">
       <div class="col">
         <span class="eyebrow">macOS screensaver · 43 effects</span>
@@ -395,3 +406,5 @@ const chip = e => `<span class="chip fam-${e.family}">${e.name}</span>`;
   render();
 })();
 </script>
+</body>
+</html>
