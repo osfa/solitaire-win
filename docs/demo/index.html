@@ -6,17 +6,15 @@
 <title>Solitaire Win Demonstration</title>
 <meta name="description" content="The Solitaire Win screensaver, running in a web browser.">
 <style>
-  /* 1995: one centred column, system grey, Times, Windows 95 bevels around a 640×480 window. */
-  @font-face { font-family: "W95FA"; src: url("../fonts/w95fa.woff2") format("woff2"); font-display: swap; }
+  /* Late-90s web: one centred column, browser grey, Times with Verdana for small text, a 640×480 demo box. */
   :root {
     --grey: #c0c0c0; --hi: #ffffff; --lo: #808080; --dark: #000000; --navy: #000080;
     --serif: "Times New Roman", Times, serif;
-    /* W95FA has one weight and a clean pixel grid at 11, 16 and 22 px; never bold it. */
-    --ui: "W95FA", "MS Sans Serif", "Microsoft Sans Serif", Tahoma, Geneva, sans-serif;
+    --ui: Verdana, Arial, Helvetica, sans-serif;
     color-scheme: light;
   }
   * { box-sizing: border-box; }
-  body { margin: 0; background: var(--grey); color: var(--dark); font: 16px/1.35 var(--serif); -webkit-font-smoothing: none; }
+  body { margin: 0; background: var(--grey); color: var(--dark); font: 16px/1.35 var(--serif); }
   .page {
     max-width: 680px; margin: 0 auto; display: grid; gap: 14px;
     padding-left: max(12px, env(safe-area-inset-left, 0px));
@@ -30,20 +28,15 @@
   code, kbd { font-family: "Courier New", Courier, monospace; }
   hr { border: 0; border-top: 1px solid var(--lo); border-bottom: 1px solid var(--hi); margin: 6px 0; width: 100%; }
 
-  .window { background: var(--grey); border: 2px solid; border-color: var(--hi) var(--dark) var(--dark) var(--hi);
-            box-shadow: inset -1px -1px var(--lo), inset 1px 1px #dfdfdf; padding: 3px; width: 100%; max-width: 652px; }
-  .titlebar { background: var(--navy); color: var(--hi); font: 16px/1 var(--ui); padding: 4px 4px 4px 6px;
-              display: flex; justify-content: space-between; align-items: center; gap: 8px; }
-  .titlebar .controls { display: flex; gap: 2px; }
-  .titlebar .controls span { width: 16px; height: 14px; background: var(--grey); color: var(--dark); font: 11px/12px var(--ui);
-                             text-align: center; border: 1px solid; border-color: var(--hi) var(--dark) var(--dark) var(--hi); }
-  .screen { display: block; width: 100%; aspect-ratio: 4 / 3; background: #008000; border: 2px inset var(--grey); margin-top: 2px; }
+  /* The demo sits in a plain bordered box, as a Java applet would have. */
+  .window { width: 100%; max-width: 644px; }
+  .screen { display: block; width: 100%; aspect-ratio: 4 / 3; background: #008000; border: 2px solid var(--dark); }
   .screen:fullscreen { border: 0; aspect-ratio: auto; width: 100vw; height: 100vh; }
   .toolbar { display: flex; flex-wrap: wrap; gap: 4px; padding: 4px 0; }
-  .status { font: 16px/1 var(--ui); padding: 4px 6px; border: 1px solid; border-color: var(--lo) var(--hi) var(--hi) var(--lo);
+  .status { font: 12px/1.2 var(--ui); padding: 4px 6px; border: 1px solid; border-color: var(--lo) var(--hi) var(--hi) var(--lo);
             white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   button {
-    font: 16px var(--ui); color: var(--dark); background: var(--grey); cursor: pointer; padding: 4px 12px;
+    font: 13px var(--ui); color: var(--dark); background: var(--grey); cursor: pointer; padding: 4px 12px;
     border: 2px solid; border-color: var(--hi) var(--dark) var(--dark) var(--hi); box-shadow: inset -1px -1px var(--lo), inset 1px 1px #dfdfdf;
   }
   button:active, button[aria-pressed="true"] { border-color: var(--dark) var(--hi) var(--hi) var(--dark); box-shadow: inset 1px 1px var(--lo); background: #d4d4d4; }
@@ -61,7 +54,6 @@
   <p>This is the screensaver running in the browser, using WebGL. It is the same program, rewritten for the web. It behaves as the installed version does, and changes over the first ten minutes or so.</p>
 
   <div class="window">
-    <div class="titlebar"><span>Solitaire Win</span><span class="controls" aria-hidden="true"><span>_</span><span>□</span><span>×</span></span></div>
     <canvas class="screen" id="screen" tabindex="0" aria-label="The Solitaire Win screensaver"></canvas>
     <div class="toolbar">
       <button type="button" id="full">Full Screen</button>

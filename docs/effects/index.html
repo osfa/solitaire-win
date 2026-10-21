@@ -5,21 +5,19 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Solitaire Win Effects</title>
 <style>
-  /* 1995: system grey, Times, default links, Windows 95 bevels; a 900px column with the catalogue as a bordered table grid. */
-  @font-face { font-family: "W95FA"; src: url("../fonts/w95fa.woff2") format("woff2"); font-display: swap; }
+  /* Late-90s web: browser grey, Times with Verdana for small text, default links; a 900px column with the catalogue as a bordered table grid. */
   :root {
     --bg: #c0c0c0; --surface: #ffffff; --ink: #000000; --muted: #404040; --line: #808080;
     --hi: #ffffff; --lo: #808080; --navy: #000080;
     --felt: #008000; --felt-soft: #a8c8a8; --red: #ff0000;
     --f-time: #0000aa; --f-colour: #aa00aa; --f-path: #008080; --f-physics: #806000; --f-glitch: #cc0000;
     --serif: "Times New Roman", Times, serif;
-    /* W95FA has one weight and a clean pixel grid at 11, 16 and 22 px; never bold it. */
-    --ui: "W95FA", "MS Sans Serif", "Microsoft Sans Serif", Tahoma, Geneva, sans-serif;
+    --ui: Verdana, Arial, Helvetica, sans-serif;
     --mono: "Courier New", Courier, monospace;
     color-scheme: light;
   }
   * { box-sizing: border-box; }
-  body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.35 var(--serif); -webkit-font-smoothing: none; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.35 var(--serif); }
   img { max-width: 100%; }
   [hidden] { display: none !important; }
   a { color: #0000ee; }
@@ -37,11 +35,11 @@
   h2 { font-size: 1.6rem; }
   h3 { font-size: 1.05rem; margin: 0; }
   p { margin: 0; }
-  .eyebrow { font: 16px/1 var(--ui); color: var(--navy); }
+  .eyebrow { font: bold 12px/1.2 var(--ui); color: var(--navy); }
   .lead { font-size: 1.1rem; }
   .muted { color: var(--muted); }
   code, .num { font-family: var(--mono); font-variant-numeric: tabular-nums; }
-  .back { font: 16px var(--ui); }
+  .back { font: 13px var(--ui); }
 
   header { display: grid; gap: 12px; }
   .hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: 20px; align-items: center; }
@@ -53,7 +51,7 @@
 
   .facts { display: grid; gap: 0; padding: 0; margin: 0; list-style: none; border: 2px outset var(--bg); }
   .facts li { display: grid; grid-template-columns: 8rem minmax(0, 1fr); gap: 12px; padding: 6px 8px; border: 1px inset var(--bg); }
-  .facts b { font: 16px var(--ui); color: var(--navy); }
+  .facts b { font: 13px var(--ui); color: var(--navy); }
   @media (max-width: 520px) { .facts li { grid-template-columns: 1fr; gap: 2px; } }
   .chart { width: 100%; overflow-x: auto; background: var(--surface); border: 2px inset var(--bg); }
   .chart svg { display: block; width: 100%; min-width: 520px; height: auto; }
@@ -62,30 +60,30 @@
   .table-wrap { overflow-x: auto; border: 2px outset var(--bg); }
   table { border-collapse: separate; border-spacing: 2px; width: 100%; font-size: 0.95rem; background: var(--bg); }
   th, td { text-align: left; padding: 4px 8px; vertical-align: top; border: 1px inset var(--bg); }
-  th { font: 16px var(--ui); background: var(--navy); color: var(--hi); border-color: var(--navy); }
+  th { font: 13px var(--ui); background: var(--navy); color: var(--hi); border-color: var(--navy); }
   td.num, th.num { text-align: right; }
 
   .sim { border: 2px outset var(--bg); padding: 0 0 12px; display: grid; gap: 10px; }
   .sim > *:not(.fx-head) { margin-inline: 12px; }
   .sim .fx-head { background: var(--navy); color: var(--hi); padding: 4px 8px; }
-  .sim .fx-head h3 { font: 16px var(--ui); }
+  .sim .fx-head h3 { font: 13px var(--ui); }
   .sim-controls { display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center; }
-  .sim-controls label { font: 16px var(--ui); display: flex; align-items: center; gap: 8px; }
+  .sim-controls label { font: 13px var(--ui); display: flex; align-items: center; gap: 8px; }
   input[type="range"] { accent-color: var(--navy); width: 180px; }
   button, .filter {
-    font: 16px var(--ui); color: var(--ink); background: var(--bg); cursor: pointer; padding: 5px 14px;
+    font: 13px var(--ui); color: var(--ink); background: var(--bg); cursor: pointer; padding: 5px 14px;
     border: 2px solid; border-color: var(--hi) #000 #000 var(--hi); box-shadow: inset -1px -1px var(--lo), inset 1px 1px #dfdfdf;
   }
   button:active, .filter[aria-pressed="true"] { border-color: #000 var(--hi) var(--hi) #000; box-shadow: inset 1px 1px var(--lo); background: #d4d4d4; }
   button:focus-visible, .filter:focus-visible { outline: 1px dotted #000; outline-offset: -5px; }
   .rolls { display: grid; gap: 4px; margin: 0; padding: 6px; list-style: none; background: var(--surface); border: 2px inset var(--bg); }
   .rolls li { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
-  .rolls .at { font: 16px var(--ui); min-width: 6.5rem; }
+  .rolls .at { font: 13px var(--ui); min-width: 6.5rem; }
 
-  .chip { display: inline-block; font: 16px/1 var(--ui); padding: 2px 4px; color: inherit; border: 1px solid currentColor; background: var(--surface); white-space: nowrap; }
+  .chip { display: inline-block; font: 12px/1.2 var(--ui); padding: 2px 4px; color: inherit; border: 1px solid currentColor; background: var(--surface); white-space: nowrap; }
   .fam-time { color: var(--f-time); } .fam-colour { color: var(--f-colour); } .fam-path { color: var(--f-path); }
   .fam-physics { color: var(--f-physics); } .fam-glitch { color: var(--f-glitch); }
-  .rare { font: 16px/1 var(--ui); color: var(--red); animation: blink 1s steps(1) infinite; }
+  .rare { font: 12px/1.2 var(--ui); color: var(--red); animation: blink 1s steps(1) infinite; }
   @keyframes blink { 50% { visibility: hidden; } }
 
   .stacks { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 10px; }
