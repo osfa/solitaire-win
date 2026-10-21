@@ -31,6 +31,8 @@ final class Engine {
     static let maxStamps = 40_000
     /// Flying-card stamps per frame before intermediate steps stop leaving stamps.
     static let stampBudget = 900
+    /// Physics steps (and trail copies) per second at normal speed, measured from the original at about 150–200.
+    static let stepsPerSecond = 160.0
 
     let rng: RNG
     private let backs: [Int]
@@ -97,7 +99,7 @@ final class Engine {
             if roundPause! <= 0 { restart() }
             return
         }
-        let ticks = 60 * dt * p.timeScale
+        let ticks = Self.stepsPerSecond * dt * p.timeScale
         if ticks == 0 { return }
         if abs(ticks) < 1 {
             step(ticks, p)
@@ -117,12 +119,14 @@ final class Engine {
             nextPile = (nextPile + 1) % 4
             guard let card = piles[i].popLast() else { continue }
             let pos = rng.chance(p.wrongLaunch) ? randomSpot() : pilePos(i)
-            return Flyer(card: card, pos: pos, vel: SIMD2(rng.range(2...7) * rng.sign(), -rng.range(0...8)))
+            return Flyer(card: card, pos: pos, vel: SIMD2(rng.range(3...13) * rng.sign(), -rng.range(0...6)))
         }
         return nil
     }
 
-    private func step(_ h: Double, _ p: PhysicsParams, stamping: Bool = true) {
+    /// `steps` is in physics steps; `h` converts it to 1/60 s ticks, the unit every speed and force is tuned in.
+    private func step(_ steps: Double, _ p: PhysicsParams, stamping: Bool = true) {
+        let h = steps * 60 / Self.stepsPerSecond
         if h > 0 {
             while flyers.lazy.filter({ !$0.ghost }).count < p.parallel, let f = launchNext(p) { flyers.append(f) }
         }

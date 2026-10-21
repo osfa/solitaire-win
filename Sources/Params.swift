@@ -3,8 +3,8 @@ import simd
 /// Speeds and accelerations are in virtual pixels per tick; a tick is 1/60 s at time scale 1.
 struct PhysicsParams {
     var timeScale = 1.0
-    var gravity = SIMD2<Double>(0, 0.5)
-    var restitution = 0.75
+    var gravity = SIMD2<Double>(0, 1.63)
+    var restitution = 0.8
     var drag = 0.0
     var walls = false
     var ceiling = false
