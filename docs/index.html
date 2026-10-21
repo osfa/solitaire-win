@@ -4,21 +4,24 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Solitaire Win</title>
-<meta name="description" content="A macOS screensaver: the Windows Solitaire win screen, which slowly starts to go wrong.">
+<meta name="description" content="A screensaver for the Macintosh showing the Windows Solitaire win screen.">
 <meta property="og:title" content="Solitaire Win">
-<meta property="og:description" content="A macOS screensaver: the Windows Solitaire win screen, which slowly starts to go wrong.">
+<meta property="og:description" content="A screensaver for the Macintosh showing the Windows Solitaire win screen.">
 <meta property="og:image" content="https://osfa.github.io/solitaire-win/effects/img/stack-cycle-rainbow.jpg">
 <style>
   /* 1995: one centred 640px column, system grey, Times, default link colours, Windows 95 bevels. */
+  @font-face { font-family: "W95FA"; src: url("fonts/w95fa.woff2") format("woff2"); font-display: swap; }
   :root {
     --grey: #c0c0c0; --hi: #ffffff; --lo: #808080; --dark: #000000; --navy: #000080;
     --link: #0000ee; --visited: #551a8b; --felt: #008000; --red: #ff0000; --yellow: #ffff00;
     --serif: "Times New Roman", Times, serif;
-    --ui: "MS Sans Serif", "Microsoft Sans Serif", Tahoma, Geneva, Verdana, sans-serif;
+    /* W95FA has one weight and a clean pixel grid at 11, 16 and 22 px; never bold it. */
+    --ui: "W95FA", "MS Sans Serif", "Microsoft Sans Serif", Tahoma, Geneva, sans-serif;
     --mono: "Courier New", Courier, monospace;
     color-scheme: light;
   }
-  body { margin: 0; background: var(--grey); color: var(--dark); font: 16px/1.35 var(--serif); }
+  body { margin: 0; background: var(--grey); color: var(--dark); font: 16px/1.35 var(--serif);
+         -webkit-font-smoothing: none; -moz-osx-font-smoothing: unset; }
   .page {
     max-width: 640px; margin: 0 auto;
     padding-left: max(12px, env(safe-area-inset-left, 0px));
@@ -39,24 +42,24 @@
   /* A Windows 95 window. */
   .window { background: var(--grey); border: 2px solid; border-color: var(--hi) var(--dark) var(--dark) var(--hi);
             box-shadow: inset -1px -1px var(--lo), inset 1px 1px #dfdfdf; padding: 3px; }
-  .titlebar { background: var(--navy); color: var(--hi); font: bold 13px/1 var(--ui); padding: 4px 4px 4px 6px;
+  .titlebar { background: var(--navy); color: var(--hi); font: 16px/1 var(--ui); padding: 4px 4px 4px 6px;
               display: flex; justify-content: space-between; align-items: center; gap: 8px; }
   .titlebar .controls { display: flex; gap: 2px; }
-  .titlebar .controls span { width: 16px; height: 14px; background: var(--grey); color: var(--dark); font: bold 10px/12px var(--ui);
+  .titlebar .controls span { width: 16px; height: 14px; background: var(--grey); color: var(--dark); font: 11px/12px var(--ui);
                              text-align: center; border: 1px solid; border-color: var(--hi) var(--dark) var(--dark) var(--hi); }
   .window .body { padding: 2px; }
   .window img { display: block; width: 100%; image-rendering: pixelated; }
 
-  .marquee { background: var(--dark); color: var(--yellow); font: bold 15px var(--mono); padding: 4px 0;
+  .marquee { background: var(--dark); color: var(--yellow); font: 16px var(--ui); padding: 4px 0;
              border: 2px inset var(--grey); overflow: hidden; white-space: nowrap; }
   .marquee span { display: inline-block; padding-left: 100%; animation: scroll 16s linear -6s infinite; }
   @keyframes scroll { to { transform: translateX(-100%); } }
   .blink { animation: blink 1s steps(1) infinite; }
   @keyframes blink { 50% { visibility: hidden; } }
-  .new { color: var(--red); font-weight: bold; font-family: var(--ui); font-size: 12px; }
+  .new { color: var(--red); font: 11px var(--ui); }
 
   .button {
-    display: inline-block; font: bold 15px var(--ui); color: var(--dark); background: var(--grey); text-decoration: none;
+    display: inline-block; font: 22px var(--ui); color: var(--dark); background: var(--grey); text-decoration: none;
     padding: 8px 18px; border: 2px solid; border-color: var(--hi) var(--dark) var(--dark) var(--hi);
     box-shadow: inset -1px -1px var(--lo), inset 1px 1px #dfdfdf; cursor: pointer;
   }
@@ -74,14 +77,14 @@
   .cmd { display: flex; gap: 6px; align-items: stretch; margin: 6px 0; }
   .cmd code { flex: 1; min-width: 0; overflow-x: auto; white-space: nowrap; background: var(--hi); padding: 6px 8px;
               border: 2px inset var(--grey); }
-  .cmd .button { padding: 4px 12px; font-size: 13px; }
+  .cmd .button { padding: 4px 12px; font-size: 16px; }
 
   .construction { background: repeating-linear-gradient(-45deg, var(--yellow) 0 14px, var(--dark) 14px 28px); padding: 6px; }
-  .construction p { background: var(--yellow); margin: 0; padding: 6px 10px; font: bold 14px var(--ui); text-align: center; }
+  .construction p { background: var(--yellow); margin: 0; padding: 6px 10px; font: 16px var(--ui); text-align: center; }
 
   .badges { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; }
   .badge { width: 88px; height: 31px; display: flex; align-items: center; justify-content: center; text-align: center;
-           font: bold 10px/1.05 var(--ui); border: 1px solid var(--dark); box-shadow: inset 1px 1px var(--hi), inset -1px -1px var(--lo); }
+           font: 11px/1.05 var(--ui); border: 1px solid var(--dark); box-shadow: inset 1px 1px var(--hi), inset -1px -1px var(--lo); }
   .b1 { background: var(--felt); color: var(--hi); }
   .b2 { background: var(--navy); color: var(--yellow); }
   .b3 { background: var(--hi); color: var(--dark); }
@@ -96,11 +99,11 @@
 <body>
 <div class="page">
   <h1>Solitaire Win</h1>
-  <center><i>A screensaver for the Macintosh</i></center>
+  <center><i>A screensaver for the Macintosh.</i></center>
 
-  <div class="marquee" aria-hidden="true"><span>*** NEW! Version 1.0.0 is out *** The win screen you remember, until it isn't *** 43 ways to go wrong *** Free download ***</span></div>
+  <div class="marquee" aria-hidden="true"><span>Version 1.0.0 &nbsp;·&nbsp; Released October 21, 2026 &nbsp;·&nbsp; 348 KB &nbsp;·&nbsp; Mac OS 13 or later &nbsp;·&nbsp;</span></div>
 
-  <p>Welcome! You know the screen you get when you win at Solitaire, with the cards bouncing off the piles and leaving trails all over the green felt? This screensaver plays it for you. For a minute or so it is exactly right. Then it starts to go wrong: slow motion, sudden bursts of speed, colours cycling, cards flying the wrong way, glitches. It gets worse and worse until the computer "reboots" and it starts all over again.</p>
+  <p>This screensaver shows the screen that appears when a game of Solitaire is won. The cards leave the foundations one at a time, bounce along the bottom of the screen and leave a copy of themselves at every step. When all 52 cards are gone the foundations are refilled and it continues.</p>
 
   <div class="window">
     <div class="titlebar"><span>Solitaire Win</span><span class="controls" aria-hidden="true"><span>_</span><span>□</span><span>×</span></span></div>
@@ -108,42 +111,43 @@
   </div>
 
   <center>
-    <p><a class="button" href="https://github.com/osfa/solitaire-win/releases/latest/download/Solitaire-Win.zip">Download Now! (348 KB)</a></p>
-    <p><font size="2">For Mac OS 13 or later. Works on Apple silicon and Intel. <span class="new blink">FREE!</span></font></p>
+    <p><a class="button" href="https://github.com/osfa/solitaire-win/releases/latest/download/Solitaire-Win.zip">Download (348 KB)</a></p>
+    <p><font size="2">Mac OS 13 or later. Apple silicon and Intel. No charge.</font></p>
   </center>
 
   <hr>
 
   <h2>Screen Shots</h2>
-  <p>Here is what happens once it starts to break. Click <a href="effects/">here</a> to see <b>all 43 effects</b> <span class="new">NEW!</span></p>
   <table class="shots">
     <tr>
-      <td><img src="effects/img/stack-cycle-rainbow.jpg" alt="Trails flickering through many card faces in rainbow colours." loading="lazy"><small><b>Card cycle + rainbow.</b> Two effects at once.</small></td>
-      <td><img src="effects/img/orbit.jpg" alt="Card trails curving around a point." loading="lazy"><small><b>Orbit.</b> Gravity pulls toward a point instead.</small></td>
+      <td><img src="effects/img/stack-cycle-rainbow.jpg" alt="Screen shot." loading="lazy"><small>Fig. 1</small></td>
+      <td><img src="effects/img/orbit.jpg" alt="Screen shot." loading="lazy"><small>Fig. 2</small></td>
     </tr>
     <tr>
-      <td><img src="effects/img/negative.jpg" alt="The win screen in negative colours." loading="lazy"><small><b>Negative.</b> One of six rare effects.</small></td>
-      <td><img src="effects/img/slices.jpg" alt="Bands of the trails shifted sideways." loading="lazy"><small><b>Slices.</b> Bands of trail jump sideways.</small></td>
+      <td><img src="effects/img/negative.jpg" alt="Screen shot." loading="lazy"><small>Fig. 3</small></td>
+      <td><img src="effects/img/slices.jpg" alt="Screen shot." loading="lazy"><small>Fig. 4</small></td>
     </tr>
     <tr>
-      <td><img src="effects/img/phosphor.jpg" alt="The screen as a one-colour monitor." loading="lazy"><small><b>Phosphor.</b> An old one-colour monitor.</small></td>
-      <td><img src="effects/img/bad-stride.jpg" alt="Card images sheared into diagonal smears." loading="lazy"><small><b>Bad stride.</b> Cards copied with the wrong row width.</small></td>
+      <td><img src="effects/img/phosphor.jpg" alt="Screen shot." loading="lazy"><small>Fig. 5</small></td>
+      <td><img src="effects/img/bad-stride.jpg" alt="Screen shot." loading="lazy"><small>Fig. 6</small></td>
     </tr>
   </table>
 
   <hr>
 
-  <h2>How to Install</h2>
+  <h2>Installation</h2>
   <ol>
     <li><a href="https://github.com/osfa/solitaire-win/releases/latest/download/Solitaire-Win.zip">Download Solitaire-Win.zip</a> and unzip it.</li>
-    <li>It isn't notarised by Apple, so the Mac will block it the first time. Open Terminal and type:
+    <li>The screensaver is not notarised by Apple, and the Mac will block it the first time. In Terminal, enter:
       <div class="cmd"><code id="xattr">xattr -dr com.apple.quarantine ~/Downloads/"Solitaire Win.saver"</code><button class="button" type="button" data-copy="xattr">Copy</button></div>
-      Or double-click it, and when the Mac refuses, go to <b>System Settings → Privacy &amp; Security</b> and click <b>Open Anyway</b>.</li>
+      Alternatively, double-click it, then go to <b>System Settings → Privacy &amp; Security</b> and click <b>Open Anyway</b>.</li>
     <li>Double-click <b>Solitaire Win.saver</b> and choose to install it.</li>
-    <li>Pick <b>Solitaire Win</b> in <b>System Settings → Screen Saver</b>. The <b>Options…</b> button sets how fast it breaks, how far, and which kinds of trouble are allowed.</li>
+    <li>Select <b>Solitaire Win</b> in <b>System Settings → Screen Saver</b>. Further settings are under <b>Options…</b>.</li>
   </ol>
 
-  <div class="construction"><p>This page is under construction! The source code is on <a href="https://github.com/osfa/solitaire-win">GitHub</a>.</p></div>
+  <p>Source code is on <a href="https://github.com/osfa/solitaire-win">GitHub</a>. <a href="effects/">Technical notes</a> are also available.</p>
+
+  <div class="construction"><p>This page is under construction.</p></div>
 
   <hr>
 
