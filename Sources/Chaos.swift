@@ -85,7 +85,8 @@ final class Director {
     }
 
     private var ramp: Double { options.rampMinutes * 60 }
-    private var delay: Double { ramp * 0.25 }
+    /// Faithful opening before anything can go wrong; a round of 52 cards takes about 100 s.
+    private var delay: Double { min(ramp * 0.25, 45) }
 
     var chaos: Double {
         if let o = chaosOverride { return o }
@@ -151,7 +152,8 @@ final class Director {
 
     private func roll(_ engine: Engine) {
         let c = chaos
-        guard c > 0.01, active.count < 1 + Int(3 * c), rng.chance(0.03 + 0.5 * c * c) else { return }
+        let started = chaosOverride == nil ? clock >= delay : c > 0.01
+        guard started, active.count < 1 + Int(3 * c), rng.chance(0.03 + 0.5 * c * c) else { return }
         let running = Set(active.map(\.spec.name))
         let pool = EffectSpec.all.filter {
             options.families.contains($0.family) && $0.minChaos <= c && !running.contains($0.name)

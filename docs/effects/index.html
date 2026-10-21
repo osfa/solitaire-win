@@ -149,10 +149,11 @@
     <span class="eyebrow">Over time</span>
     <h2 id="drift">How it drifts</h2>
     <p>Everything hangs on one number, <b>chaos</b>, from 0 (the real win screen) to 1 (fully broken). It follows the clock, not chance.</p>
-    <div class="chart" id="chart" role="img" aria-label="Chaos stays at 0 for 2 minutes, rises along an S-curve to 1 at 10 minutes, and the number of effects allowed at once steps from 1 to 4."></div>
+    <div class="chart" id="chart" role="img" aria-label="Chaos stays at 0 for 45 seconds, rises along an S-curve to 1 at about 9 minutes, and the number of effects allowed at once steps from 1 to 4."></div>
     <ul class="facts">
-      <li><b>0–2 min</b><span>Nothing goes wrong. The delay is a quarter of the ramp, which is 8 minutes by default (Options… changes it).</span></li>
-      <li><b>2–10 min</b><span>Chaos climbs along an S-curve: slow start, fast middle, slow finish.</span></li>
+      <li><b>0–45 s</b><span>Nothing goes wrong. A round of 52 cards takes about 100 seconds, so the first oddities land late in the first round.</span></li>
+      <li><b>45 s – 9 min</b><span>Chaos climbs along an S-curve: slow start, fast middle, slow finish. The ramp is 8 minutes by default (Options… changes it).</span></li>
+      <li><b>Rounds</b><span>When all 52 cards are gone, the foundations refill and the next round paints over the old trails. The screen is never cleared, except by a reboot.</span></li>
       <li><b>Every second</b><span>If there is a free slot, there is a <span class="num">3% + 50% × chaos²</span> chance a new effect starts. That is 3% at the start and 53% at full chaos.</span></li>
       <li><b>Which one</b><span>A weighted draw among effects unlocked at the current chaos and not already running. Rare effects have about a twentieth of the usual weight.</span></li>
       <li><b>How hard</b><span>Strength is random, scaled up with chaos. Durations stretch from 0.6× to 1.5× as chaos rises.</span></li>
@@ -313,7 +314,7 @@ const fmtEvery = m => m < 1.5 ? "about every minute" : m < 90 ? `about every ${M
   const y = c => T + (1 - c) * (H - T - B);
   const ss = t => t * t * (3 - 2 * t);
   const pts = [];
-  for (let m = 0; m <= 20; m += 0.1) pts.push([x(m), y(m < 2 ? 0 : m > 10 ? 1 : ss((m - 2) / 8))]);
+  for (let m = 0; m <= 20; m += 0.1) pts.push([x(m), y(m < 0.75 ? 0 : m > 8.75 ? 1 : ss((m - 0.75) / 8))]);
   const line = pts.map((p, i) => (i ? "L" : "M") + p[0].toFixed(1) + " " + p[1].toFixed(1)).join(" ");
   const area = line + ` L ${x(20)} ${y(0)} L ${x(0)} ${y(0)} Z`;
   let grid = "";
@@ -324,13 +325,13 @@ const fmtEvery = m => m < 1.5 ? "about every minute" : m < 90 ? `about every ${M
     if (c > 0) grid += `<text x="${W - R - 4}" y="${y(c) - 6}" text-anchor="end">${k} at once</text>`;
   }
   for (const m of [0, 2, 5, 10, 15, 20]) grid += `<text x="${x(m)}" y="${H - 12}" text-anchor="middle">${m} min</text>`;
-  const reboot = `<rect x="${x(12)}" y="${T}" width="${x(20) - x(12)}" height="${H - T - B}" fill="var(--felt-soft)"/>
-    <text x="${(x(12) + x(20)) / 2}" y="${T + 16}" text-anchor="middle">reboot somewhere in here</text>`;
+  const reboot = `<rect x="${x(10.75)}" y="${T}" width="${x(18.75) - x(10.75)}" height="${H - T - B}" fill="var(--felt-soft)"/>
+    <text x="${(x(10.75) + x(18.75)) / 2}" y="${T + 16}" text-anchor="middle">reboot somewhere in here</text>`;
   document.getElementById("chart").innerHTML =
     `<svg viewBox="0 0 ${W} ${H}" aria-hidden="true">${reboot}${grid}
       <path d="${area}" fill="var(--felt)" opacity="0.12"/>
       <path d="${line}" fill="none" stroke="var(--felt)" stroke-width="2.5"/>
-      <circle cx="${x(10)}" cy="${y(1)}" r="4" fill="var(--felt)"/></svg>`;
+      <circle cx="${x(8.75)}" cy="${y(1)}" r="4" fill="var(--felt)"/></svg>`;
 })();
 
 // Distinct sets per chaos level.

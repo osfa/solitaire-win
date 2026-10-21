@@ -54,6 +54,7 @@ final class Engine {
     private var nextPile = 0
     private var acc = 0.0
     private var roundPause: Double?
+    private(set) var rounds = 0
 
     var flyers: [Flyer] = []
     var stamps: [Stamp] = []
@@ -80,6 +81,14 @@ final class Engine {
         stamps = []
         stamp(card: Self.stockSlot, at: SIMD2(columnX(0), 6), scale: 1)
         for i in 0..<4 { stamp(card: piles[i].last!, at: pilePos(i), scale: 1) }
+    }
+
+    /// Refills the foundations and carries on over the existing trails; only `restart` shows the opening layout.
+    private func nextRound() {
+        piles = (0..<4).map { suit in (0..<13).map { suit * 13 + $0 } }
+        nextPile = 0
+        roundPause = nil
+        rounds += 1
     }
 
     func clearOutput() {
@@ -113,7 +122,7 @@ final class Engine {
     func frame(dt: Double, params p: PhysicsParams) {
         if let pause = roundPause {
             roundPause = pause - dt
-            if roundPause! <= 0 { restart() }
+            if roundPause! <= 0 { nextRound() }
             return
         }
         let ticks = Self.stepsPerSecond * dt * p.timeScale
@@ -127,7 +136,7 @@ final class Engine {
             let every = max(1, (max(flyers.count, 1) * n + Self.stampBudget - 1) / Self.stampBudget)
             for i in 0..<n { step(ticks > 0 ? 1 : -1, p, stamping: (n - 1 - i) % every == 0) }
         }
-        if flyers.isEmpty, piles.allSatisfy(\.isEmpty) { roundPause = 2.5 }
+        if flyers.isEmpty, piles.allSatisfy(\.isEmpty) { roundPause = 1 }
     }
 
     private func launchNext(_ p: PhysicsParams) -> Flyer? {
