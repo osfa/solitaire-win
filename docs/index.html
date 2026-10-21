@@ -2,141 +2,172 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Solitaire Win</title>
 <meta name="description" content="A macOS screensaver: the Windows Solitaire win screen, which slowly starts to go wrong.">
 <meta property="og:title" content="Solitaire Win">
 <meta property="og:description" content="A macOS screensaver: the Windows Solitaire win screen, which slowly starts to go wrong.">
 <meta property="og:image" content="https://osfa.github.io/solitaire-win/effects/img/stack-cycle-rainbow.jpg">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Pixelify+Sans:wght@500;700&display=swap">
 <style>
-  /* Layout: one column; hero with the download, then a strip of broken frames, then install steps. */
+  /* 1995: one centred 640px column, system grey, Times, default link colours, Windows 95 bevels. */
   :root {
-    --bg: #eef2ec; --surface: #ffffff; --ink: #142017; --muted: #556458; --line: #cad5cb;
-    --felt: #0b7a2a; --felt-ink: #ffffff; --red: #c4141a;
-    --display: "Pixelify Sans", "Courier New", monospace;
-    --body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
-    --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+    --grey: #c0c0c0; --hi: #ffffff; --lo: #808080; --dark: #000000; --navy: #000080;
+    --link: #0000ee; --visited: #551a8b; --felt: #008000; --red: #ff0000; --yellow: #ffff00;
+    --serif: "Times New Roman", Times, serif;
+    --ui: "MS Sans Serif", "Microsoft Sans Serif", Tahoma, Geneva, Verdana, sans-serif;
+    --mono: "Courier New", Courier, monospace;
     color-scheme: light;
   }
-  @media (prefers-color-scheme: dark) {
-    :root { --bg: #0c1610; --surface: #132119; --ink: #e5eee6; --muted: #93a598; --line: #263a2d;
-            --felt: #4cc271; --felt-ink: #0c1610; --red: #ff6461; color-scheme: dark; }
+  body { margin: 0; background: var(--grey); color: var(--dark); font: 16px/1.35 var(--serif); }
+  .page {
+    max-width: 640px; margin: 0 auto;
+    padding-left: max(12px, env(safe-area-inset-left, 0px));
+    padding-right: max(12px, env(safe-area-inset-right, 0px));
+    padding-block: 16px 40px;
   }
-  * { box-sizing: border-box; }
-  body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.6 var(--body); }
-  img { max-width: 100%; }
-  .wrap {
-    max-width: 1080px; margin: 0 auto; display: grid; gap: 72px;
-    padding-left: max(16px, env(safe-area-inset-left, 0px));
-    padding-right: max(16px, env(safe-area-inset-right, 0px));
-    padding-block: 48px 72px;
+  a { color: var(--link); }
+  a:visited { color: var(--visited); }
+  img { max-width: 100%; height: auto; }
+  h1, h2 { font-family: var(--serif); margin: 0.6em 0 0.3em; }
+  h1 { font-size: 2.6rem; text-align: center; }
+  h2 { font-size: 1.5rem; }
+  p { margin: 0.6em 0; }
+  hr { border: 0; border-top: 1px solid var(--lo); border-bottom: 1px solid var(--hi); margin: 20px 0; }
+  center, .center { text-align: center; display: block; }
+  code { font-family: var(--mono); font-size: 0.95em; }
+
+  /* A Windows 95 window. */
+  .window { background: var(--grey); border: 2px solid; border-color: var(--hi) var(--dark) var(--dark) var(--hi);
+            box-shadow: inset -1px -1px var(--lo), inset 1px 1px #dfdfdf; padding: 3px; }
+  .titlebar { background: var(--navy); color: var(--hi); font: bold 13px/1 var(--ui); padding: 4px 4px 4px 6px;
+              display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+  .titlebar .controls { display: flex; gap: 2px; }
+  .titlebar .controls span { width: 16px; height: 14px; background: var(--grey); color: var(--dark); font: bold 10px/12px var(--ui);
+                             text-align: center; border: 1px solid; border-color: var(--hi) var(--dark) var(--dark) var(--hi); }
+  .window .body { padding: 2px; }
+  .window img { display: block; width: 100%; image-rendering: pixelated; }
+
+  .marquee { background: var(--dark); color: var(--yellow); font: bold 15px var(--mono); padding: 4px 0;
+             border: 2px inset var(--grey); overflow: hidden; white-space: nowrap; }
+  .marquee span { display: inline-block; padding-left: 100%; animation: scroll 16s linear -6s infinite; }
+  @keyframes scroll { to { transform: translateX(-100%); } }
+  .blink { animation: blink 1s steps(1) infinite; }
+  @keyframes blink { 50% { visibility: hidden; } }
+  .new { color: var(--red); font-weight: bold; font-family: var(--ui); font-size: 12px; }
+
+  .button {
+    display: inline-block; font: bold 15px var(--ui); color: var(--dark); background: var(--grey); text-decoration: none;
+    padding: 8px 18px; border: 2px solid; border-color: var(--hi) var(--dark) var(--dark) var(--hi);
+    box-shadow: inset -1px -1px var(--lo), inset 1px 1px #dfdfdf; cursor: pointer;
   }
-  h1, h2 { font-family: var(--display); font-weight: 700; line-height: 1.05; margin: 0; text-wrap: balance; }
-  h1 { font-size: clamp(2.8rem, 9vw, 5rem); }
-  h2 { font-size: clamp(1.6rem, 4vw, 2.2rem); }
-  p { margin: 0; }
-  a { color: var(--felt); }
-  code { font-family: var(--mono); font-size: 0.9em; }
-  .eyebrow { font: 500 0.78rem/1 var(--mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--felt); }
-  .muted { color: var(--muted); }
+  .button:visited { color: var(--dark); }
+  .button:active { border-color: var(--dark) var(--hi) var(--hi) var(--dark); box-shadow: inset 1px 1px var(--lo); }
+  .button:focus-visible { outline: 1px dotted var(--dark); outline-offset: -5px; }
 
-  .hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); gap: 40px; align-items: center; }
-  .hero-text { display: grid; gap: 20px; }
-  .lead { font-size: 1.2rem; color: var(--muted); max-width: 46ch; }
-  .actions { display: flex; flex-wrap: wrap; gap: 12px 20px; align-items: center; }
-  .download {
-    display: inline-flex; align-items: center; gap: 10px; text-decoration: none;
-    font: 600 1.05rem var(--body); color: var(--felt-ink); background: var(--felt); padding: 13px 22px;
-  }
-  .download:hover { filter: brightness(1.08); }
-  .download:focus-visible, .copy:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
-  .meta { font: 0.82rem var(--mono); color: var(--muted); }
-  .shot { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; image-rendering: pixelated;
-          border: 1px solid var(--line); background: #008000; }
-  @media (max-width: 760px) { .hero { grid-template-columns: 1fr; } }
+  table.shots { border-collapse: separate; border: 2px outset var(--grey); background: var(--grey); width: 100%; }
+  table.shots td { border: 2px inset var(--grey); padding: 4px; vertical-align: top; width: 50%; }
+  table.shots img { display: block; width: 100%; image-rendering: pixelated; }
+  table.shots small { display: block; margin-top: 4px; font-size: 13px; }
 
-  section { display: grid; gap: 20px; }
-  .strip { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
-  .strip figure { margin: 0; display: grid; gap: 6px; }
-  .strip figcaption { font-size: 0.85rem; color: var(--muted); }
-  .strip b { color: var(--ink); font-weight: 600; }
-  @media (max-width: 760px) { .strip { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-  @media (max-width: 440px) { .strip { grid-template-columns: 1fr; } }
+  ol { padding-left: 1.6em; }
+  ol li { margin: 0.5em 0; }
+  .cmd { display: flex; gap: 6px; align-items: stretch; margin: 6px 0; }
+  .cmd code { flex: 1; min-width: 0; overflow-x: auto; white-space: nowrap; background: var(--hi); padding: 6px 8px;
+              border: 2px inset var(--grey); }
+  .cmd .button { padding: 4px 12px; font-size: 13px; }
 
-  .steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 18px; max-width: 720px; counter-reset: step; }
-  .steps li { display: grid; grid-template-columns: 2.2rem minmax(0, 1fr); gap: 14px; counter-increment: step; }
-  .steps li::before {
-    content: counter(step); font: 700 1.1rem/2rem var(--display); text-align: center;
-    width: 2rem; height: 2rem; border: 1px solid var(--line); background: var(--surface);
-  }
-  .steps li > div { display: grid; gap: 8px; min-width: 0; padding-top: 3px; }
-  .cmd { display: flex; align-items: stretch; border: 1px solid var(--line); background: var(--surface); min-width: 0; }
-  .cmd code { flex: 1; padding: 10px 12px; overflow-x: auto; white-space: nowrap; }
-  .copy { font: 500 0.8rem var(--mono); border: 0; border-left: 1px solid var(--line); background: transparent; color: var(--ink);
-          padding: 0 14px; cursor: pointer; }
-  .copy:hover { background: var(--bg); }
+  .construction { background: repeating-linear-gradient(-45deg, var(--yellow) 0 14px, var(--dark) 14px 28px); padding: 6px; }
+  .construction p { background: var(--yellow); margin: 0; padding: 6px 10px; font: bold 14px var(--ui); text-align: center; }
 
-  footer { border-top: 1px solid var(--line); padding-top: 20px; font-size: 0.85rem; color: var(--muted); display: grid; gap: 6px; }
+  .badges { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; }
+  .badge { width: 88px; height: 31px; display: flex; align-items: center; justify-content: center; text-align: center;
+           font: bold 10px/1.05 var(--ui); border: 1px solid var(--dark); box-shadow: inset 1px 1px var(--hi), inset -1px -1px var(--lo); }
+  .b1 { background: var(--felt); color: var(--hi); }
+  .b2 { background: var(--navy); color: var(--yellow); }
+  .b3 { background: var(--hi); color: var(--dark); }
+  .b4 { background: var(--red); color: var(--hi); }
+
+  .odometer { display: inline-flex; gap: 1px; vertical-align: middle; }
+  .odometer span { background: var(--dark); color: #00ff00; font: bold 16px/1 var(--mono); padding: 3px 4px; }
+  footer { font-size: 13px; text-align: center; }
+  @media (prefers-reduced-motion: reduce) { .marquee span, .blink { animation: none; padding-left: 0; } }
 </style>
 </head>
 <body>
-<div class="wrap">
-  <header class="hero">
-    <div class="hero-text">
-      <span class="eyebrow">macOS screensaver</span>
-      <h1>Solitaire Win</h1>
-      <p class="lead">The Windows Solitaire win screen, faithful at first. After a minute or so it starts to go wrong, gets steadily worse, then reboots and does it again.</p>
-      <div class="actions">
-        <a class="download" href="https://github.com/osfa/solitaire-win/releases/latest/download/Solitaire-Win.zip">Download for Mac</a>
-        <a href="https://github.com/osfa/solitaire-win">Source on GitHub</a>
-      </div>
-      <p class="meta">macOS 13 or later · Apple silicon and Intel · free</p>
-    </div>
-    <img class="shot" src="effects/img/normal.jpg" alt="Green felt with cards bouncing off the bottom edge, each leaving a dense trail of copies.">
-  </header>
+<div class="page">
+  <h1>Solitaire Win</h1>
+  <center><i>A screensaver for the Macintosh</i></center>
 
-  <section aria-labelledby="breaks">
-    <span class="eyebrow">Then it breaks</span>
-    <h2 id="breaks">43 ways to go wrong</h2>
-    <div class="strip">
-      <figure><img class="shot" src="effects/img/stack-cycle-rainbow.jpg" alt="Trails flickering through many card faces in rainbow colours." loading="lazy"><figcaption><b>Card cycle + rainbow</b>, two effects stacked</figcaption></figure>
-      <figure><img class="shot" src="effects/img/bad-stride.jpg" alt="Card images sheared into diagonal smears." loading="lazy"><figcaption><b>Bad stride</b>: cards copied with the wrong row width</figcaption></figure>
-      <figure><img class="shot" src="effects/img/orbit.jpg" alt="Card trails curving around a point." loading="lazy"><figcaption><b>Orbit</b>: gravity pulls to a point instead</figcaption></figure>
-      <figure><img class="shot" src="effects/img/negative.jpg" alt="The win screen in negative colours." loading="lazy"><figcaption><b>Negative</b>, one of six rare effects</figcaption></figure>
-      <figure><img class="shot" src="effects/img/slices.jpg" alt="Bands of the trails shifted sideways." loading="lazy"><figcaption><b>Slices</b>: bands of trail jump sideways</figcaption></figure>
-      <figure><img class="shot" src="effects/img/phosphor.jpg" alt="The screen as a one-colour monitor." loading="lazy"><figcaption><b>Phosphor</b>: an old one-colour monitor</figcaption></figure>
-    </div>
-    <p><a href="effects/">See every effect, how chaos builds up, and how effects stack →</a></p>
-  </section>
+  <div class="marquee" aria-hidden="true"><span>*** NEW! Version 1.0.0 is out *** The win screen you remember, until it isn't *** 43 ways to go wrong *** Free download ***</span></div>
 
-  <section aria-labelledby="install">
-    <span class="eyebrow">Install</span>
-    <h2 id="install">Installing</h2>
-    <ol class="steps">
-      <li><div><p><a href="https://github.com/osfa/solitaire-win/releases/latest/download/Solitaire-Win.zip">Download Solitaire-Win.zip</a> and unzip it.</p></div></li>
-      <li><div>
-        <p>It isn't notarised by Apple, so macOS will block it at first. Clear the download flag in Terminal:</p>
-        <div class="cmd"><code id="xattr">xattr -dr com.apple.quarantine ~/Downloads/"Solitaire Win.saver"</code><button class="copy" type="button" data-copy="xattr">Copy</button></div>
-        <p class="muted">Or double-click it, and when macOS refuses, open System Settings → Privacy &amp; Security and click <b>Open Anyway</b>.</p>
-      </div></li>
-      <li><div><p>Double-click <b>Solitaire Win.saver</b> and choose to install it.</p></div></li>
-      <li><div><p>Pick <b>Solitaire Win</b> in System Settings → Screen Saver. <b>Options…</b> sets how fast it breaks, how far, and which kinds of trouble are allowed.</p></div></li>
-    </ol>
-  </section>
+  <p>Welcome! You know the screen you get when you win at Solitaire, with the cards bouncing off the piles and leaving trails all over the green felt? This screensaver plays it for you. For a minute or so it is exactly right. Then it starts to go wrong: slow motion, sudden bursts of speed, colours cycling, cards flying the wrong way, glitches. It gets worse and worse until the computer "reboots" and it starts all over again.</p>
+
+  <div class="window">
+    <div class="titlebar"><span>Solitaire Win</span><span class="controls" aria-hidden="true"><span>_</span><span>□</span><span>×</span></span></div>
+    <div class="body"><img src="effects/img/normal.jpg" alt="Green felt with cards bouncing off the bottom edge, each leaving a dense trail of copies."></div>
+  </div>
+
+  <center>
+    <p><a class="button" href="https://github.com/osfa/solitaire-win/releases/latest/download/Solitaire-Win.zip">Download Now! (348 KB)</a></p>
+    <p><font size="2">For Mac OS 13 or later. Works on Apple silicon and Intel. <span class="new blink">FREE!</span></font></p>
+  </center>
+
+  <hr>
+
+  <h2>Screen Shots</h2>
+  <p>Here is what happens once it starts to break. Click <a href="effects/">here</a> to see <b>all 43 effects</b> <span class="new">NEW!</span></p>
+  <table class="shots">
+    <tr>
+      <td><img src="effects/img/stack-cycle-rainbow.jpg" alt="Trails flickering through many card faces in rainbow colours." loading="lazy"><small><b>Card cycle + rainbow.</b> Two effects at once.</small></td>
+      <td><img src="effects/img/orbit.jpg" alt="Card trails curving around a point." loading="lazy"><small><b>Orbit.</b> Gravity pulls toward a point instead.</small></td>
+    </tr>
+    <tr>
+      <td><img src="effects/img/negative.jpg" alt="The win screen in negative colours." loading="lazy"><small><b>Negative.</b> One of six rare effects.</small></td>
+      <td><img src="effects/img/slices.jpg" alt="Bands of the trails shifted sideways." loading="lazy"><small><b>Slices.</b> Bands of trail jump sideways.</small></td>
+    </tr>
+    <tr>
+      <td><img src="effects/img/phosphor.jpg" alt="The screen as a one-colour monitor." loading="lazy"><small><b>Phosphor.</b> An old one-colour monitor.</small></td>
+      <td><img src="effects/img/bad-stride.jpg" alt="Card images sheared into diagonal smears." loading="lazy"><small><b>Bad stride.</b> Cards copied with the wrong row width.</small></td>
+    </tr>
+  </table>
+
+  <hr>
+
+  <h2>How to Install</h2>
+  <ol>
+    <li><a href="https://github.com/osfa/solitaire-win/releases/latest/download/Solitaire-Win.zip">Download Solitaire-Win.zip</a> and unzip it.</li>
+    <li>It isn't notarised by Apple, so the Mac will block it the first time. Open Terminal and type:
+      <div class="cmd"><code id="xattr">xattr -dr com.apple.quarantine ~/Downloads/"Solitaire Win.saver"</code><button class="button" type="button" data-copy="xattr">Copy</button></div>
+      Or double-click it, and when the Mac refuses, go to <b>System Settings → Privacy &amp; Security</b> and click <b>Open Anyway</b>.</li>
+    <li>Double-click <b>Solitaire Win.saver</b> and choose to install it.</li>
+    <li>Pick <b>Solitaire Win</b> in <b>System Settings → Screen Saver</b>. The <b>Options…</b> button sets how fast it breaks, how far, and which kinds of trouble are allowed.</li>
+  </ol>
+
+  <div class="construction"><p>This page is under construction! The source code is on <a href="https://github.com/osfa/solitaire-win">GitHub</a>.</p></div>
+
+  <hr>
+
+  <div class="badges" aria-label="Facts about this screensaver">
+    <span class="badge b1">MAC OS 13+<br>READY</span>
+    <span class="badge b2">APPLE SILICON<br>+ INTEL</span>
+    <span class="badge b3">MIT<br>LICENSED</span>
+    <span class="badge b4">NOT<br>NOTARIZED</span>
+  </div>
 
   <footer>
-    <p>Made by <a href="https://github.com/osfa">osfa</a>. Source code under the MIT licence.</p>
-    <p>Card art is from Microsoft Windows Solitaire. This project is not affiliated with or endorsed by Microsoft.</p>
+    <p>Days since Windows 95 shipped: <span class="odometer" id="days" aria-live="off"></span></p>
+    <p>Best viewed with Netscape Navigator 2.0 at 800×600 in 256 colours.</p>
+    <p>Made by <a href="https://github.com/osfa">osfa</a>. Last updated October 21, 2026.</p>
+    <p>Card art is from Microsoft Windows Solitaire. This page is not affiliated with or endorsed by Microsoft.</p>
   </footer>
 </div>
 <script>
-  document.querySelectorAll(".copy").forEach(b => b.addEventListener("click", async () => {
-    const text = document.getElementById(b.dataset.copy).textContent;
-    try { await navigator.clipboard.writeText(text); b.textContent = "Copied"; }
-    catch { getSelection().selectAllChildren(document.getElementById(b.dataset.copy)); b.textContent = "Selected"; }
+  const days = Math.floor((Date.now() - Date.UTC(1995, 7, 24)) / 86400000);
+  document.getElementById("days").innerHTML = String(days).padStart(6, "0").split("").map(d => `<span>${d}</span>`).join("");
+  document.querySelectorAll("[data-copy]").forEach(b => b.addEventListener("click", async () => {
+    const el = document.getElementById(b.dataset.copy);
+    try { await navigator.clipboard.writeText(el.textContent); b.textContent = "Copied"; }
+    catch { getSelection().selectAllChildren(el); b.textContent = "Selected"; }
     setTimeout(() => b.textContent = "Copy", 1600);
   }));
 </script>
