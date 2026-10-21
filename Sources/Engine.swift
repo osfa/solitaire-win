@@ -60,6 +60,7 @@ final class Engine {
         roundPause = nil
         wipe = true
         stamps = []
+        for i in 0..<4 { stamp(card: piles[i].last!, at: pilePos(i), scale: 1) }
     }
 
     func clearOutput() {
