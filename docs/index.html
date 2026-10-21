@@ -18,7 +18,8 @@
     --mono: "Courier New", Courier, monospace;
     color-scheme: light;
   }
-  body { margin: 0; background: var(--grey); color: var(--dark); font: 16px/1.35 var(--serif); }
+  body { margin: 0; background: var(--grey); color: var(--dark); font: 16px/1.35 var(--serif);
+         -webkit-font-smoothing: none; text-rendering: optimizeSpeed; font-kerning: none; font-variant-ligatures: none; }
   .page {
     max-width: 640px; margin: 0 auto;
     padding-left: max(12px, env(safe-area-inset-left, 0px));

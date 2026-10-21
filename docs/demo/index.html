@@ -14,7 +14,8 @@
     color-scheme: light;
   }
   * { box-sizing: border-box; }
-  body { margin: 0; background: var(--grey); color: var(--dark); font: 16px/1.35 var(--serif); }
+  body { margin: 0; background: var(--grey); color: var(--dark); font: 16px/1.35 var(--serif);
+         -webkit-font-smoothing: none; text-rendering: optimizeSpeed; font-kerning: none; font-variant-ligatures: none; }
   .page {
     max-width: 680px; margin: 0 auto; display: grid; gap: 14px;
     padding-left: max(12px, env(safe-area-inset-left, 0px));
