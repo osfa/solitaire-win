@@ -15,7 +15,8 @@ struct Flyer {
     var vel: SIMD2<Double>
     var age = 0.0
     var stall = 0.0
-    var back = false
+    /// Atlas cell of the back it shows instead of its face.
+    var back: Int?
     /// The foundation this card left, until it has moved clear of it.
     var pile: Int?
     /// Extra cards from glitches; they don't come from a foundation.
@@ -31,6 +32,7 @@ final class Engine {
     static let stampBudget = 900
 
     let rng: RNG
+    private let backs: [Int]
     private(set) var size = SIMD2<Double>(960, 540)
     private var piles: [[Int]] = []
     private var nextPile = 0
@@ -42,8 +44,9 @@ final class Engine {
     var canvasOps: [CanvasOp] = []
     var wipe = false
 
-    init(rng: RNG) {
+    init(rng: RNG, backs: [Int]) {
         self.rng = rng
+        self.backs = backs
         restart()
     }
 
@@ -179,9 +182,9 @@ final class Engine {
             }
             if p.teleportRate > 0, rng.chance(p.teleportRate * abs(h) / 60) { f.pos = randomSpot() }
             if p.showBack > 0 {
-                if rng.chance(p.showBack * 0.03 * abs(h)) { f.back.toggle() }
+                if rng.chance(p.showBack * 0.03 * abs(h)) { f.back = f.back == nil ? backs[rng.int(backs.count)] : nil }
             } else {
-                f.back = false
+                f.back = nil
             }
 
             if simd_length(f.vel) < 0.3 {
@@ -194,7 +197,7 @@ final class Engine {
                 f.stall = 0
             }
 
-            if stamping { stamp(card: f.back ? CardArt.backCard : f.card, at: f.pos, scale: p.cardScale) }
+            if stamping { stamp(card: f.back ?? f.card, at: f.pos, scale: p.cardScale) }
 
             if let pile = f.pile, !overlaps(f.pos, cs, pilePos(pile), Self.cardSize) {
                 if let top = piles[pile].last { stamp(card: top, at: pilePos(pile), scale: 1) }

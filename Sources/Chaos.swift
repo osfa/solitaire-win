@@ -166,6 +166,11 @@ final class Director {
         start(spec, intensity: rng.range(0.6...1), durationScale: 1, engine: engine)
     }
 
+    func force(named name: String, engine: Engine) {
+        guard let spec = EffectSpec.all.first(where: { $0.name == name }) else { return }
+        start(spec, intensity: 1, durationScale: 3, engine: engine)
+    }
+
     func clearEffects() { active.removeAll() }
 
     private func start(_ spec: EffectSpec, intensity: Double, durationScale: Double, engine: Engine) {

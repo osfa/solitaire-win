@@ -43,7 +43,7 @@ final class Renderer {
     }
     var hasTargets: Bool { canvas != nil }
 
-    init?(view: MTKView) {
+    init?(view: MTKView, atlas art: Atlas) {
         guard let device = view.device, let queue = device.makeCommandQueue(),
               let lib = try? device.makeLibrary(source: shaderSource, options: nil) else { return nil }
         self.device = device
@@ -63,13 +63,12 @@ final class Renderer {
         canvasPipe = c
         postPipe = p
 
-        let d = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .rgba8Unorm, width: CardArt.atlasW,
-                                                         height: CardArt.atlasH, mipmapped: false)
+        let d = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .rgba8Unorm, width: art.width,
+                                                         height: art.height, mipmapped: false)
         d.usage = .shaderRead
         guard let atlas = device.makeTexture(descriptor: d) else { return nil }
-        let bytes = CardArt.makeAtlas()
-        atlas.replace(region: MTLRegionMake2D(0, 0, CardArt.atlasW, CardArt.atlasH), mipmapLevel: 0,
-                      withBytes: bytes, bytesPerRow: CardArt.atlasW * 4)
+        atlas.replace(region: MTLRegionMake2D(0, 0, art.width, art.height), mipmapLevel: 0,
+                      withBytes: art.bytes, bytesPerRow: art.width * 4)
         self.atlas = atlas
     }
 
@@ -167,7 +166,7 @@ final class Renderer {
             let size = virtualSize
             var u = StampUniforms(virtW: Float(size.x), virtH: Float(size.y),
                                   cardW: Float(CardArt.cardW), cardH: Float(CardArt.cardH),
-                                  atlasW: Float(CardArt.atlasW), atlasH: Float(CardArt.atlasH),
+                                  atlasW: Float(atlas.width), atlasH: Float(atlas.height),
                                   offX: Float(look.atlasOffset.x), offY: Float(look.atlasOffset.y),
                                   strideExtra: Float(look.strideExtra))
             enc.setRenderPipelineState(stampPipe)

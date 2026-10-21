@@ -15,7 +15,10 @@ targets:
   SolitaireSaver:
     type: bundle
     platform: macOS
-    sources: [Sources]
+    sources:
+      - Sources
+      - path: Resources
+        optional: true
     settings:
       base:
         PRODUCT_NAME: Solitaire Win
@@ -32,7 +35,11 @@ targets:
   Harness:
     type: application
     platform: macOS
-    sources: [Sources, Harness]
+    sources:
+      - Sources
+      - Harness
+      - path: Resources
+        optional: true
     settings:
       base:
         PRODUCT_NAME: Solitaire Harness

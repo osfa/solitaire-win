@@ -3,7 +3,7 @@ import AppKit
 /// Runs the saver in a window. Keys: space pause, 1–5 force a family (time, colour, path, physics, glitch),
 /// 0 clear effects, +/- chaos, a back to automatic chaos, f clock ×10, r reboot, s print seed, p snapshot.
 ///
-/// Arguments: --seed N, --chaos X, --force FAMILY[,FAMILY], --size WxH, --fps YES, --ff YES (clock ×10),
+/// Arguments: --seed N, --chaos X, --force FAMILY[,FAMILY], --size WxH, --fps YES, --ff YES (clock ×10), --drawn YES (drawn deck), --effect NAME[,NAME] (e.g. "flip to back"),
 /// --snap DIR --snaps N --every SECONDS (writes N PNGs then quits).
 final class AppDelegate: NSObject, NSApplicationDelegate {
     var window: NSWindow!
@@ -20,7 +20,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
         window = NSWindow(contentRect: frame, styleMask: [.titled, .closable, .resizable, .miniaturizable],
                           backing: .buffered, defer: false)
-        saver = SolitaireSaverView(frame: frame, isPreview: false, seed: seed, options: Options())
+        var options = Options()
+        options.drawnDeck = args.bool(forKey: "drawn")
+        saver = SolitaireSaverView(frame: frame, isPreview: false, seed: seed, options: options)
         window.contentView = saver
         window.center()
         window.makeKeyAndOrderFront(nil)
@@ -51,6 +53,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             let byName = Dictionary(uniqueKeysWithValues: Family.allCases.map { ("\($0)", $0) })
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                 for n in names.split(separator: ",") { if let f = byName[String(n)] { self.saver.force(f) } }
+            }
+        }
+        if let names = args.string(forKey: "effect") {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                for n in names.split(separator: ",") { self.saver.force(named: String(n)) }
             }
         }
         if let dir = args.string(forKey: "snap") {

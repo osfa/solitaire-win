@@ -1,7 +1,15 @@
-import Foundation
+import AppKit
+
+/// RGBA8, row-major. Cells are 71×96, 13 per row; rows: spades, hearts, clubs, diamonds, then backs.
+struct Atlas {
+    let bytes: [UInt8]
+    let width: Int
+    let height: Int
+    /// Cell indices that hold card backs.
+    let backs: [Int]
+}
 
 /// Pixel-art deck at the original 71×96 card size, laid out like the Windows deck.
-/// Atlas rows: spades, hearts, clubs, diamonds, backs.
 enum CardArt {
     static let cardW = 71
     static let cardH = 96
@@ -9,7 +17,29 @@ enum CardArt {
     static let rows = 5
     static let atlasW = cardW * columns
     static let atlasH = cardH * rows
-    static let backCard = 52
+
+    /// The original deck as a sprite sheet (`cards.png`, 923×576) if bundled, otherwise the drawn deck.
+    static func atlas(bundle: Bundle, preferDrawn: Bool) -> Atlas {
+        if !preferDrawn, let sheet = loadSheet(bundle: bundle) { return sheet }
+        return Atlas(bytes: makeAtlas(), width: atlasW, height: atlasH, backs: Array(52..<65))
+    }
+
+    /// The sheet's background green shows through at card corners and in empty cells.
+    private static func loadSheet(bundle: Bundle) -> Atlas? {
+        guard let url = bundle.url(forResource: "cards", withExtension: "png"),
+              let image = NSImage(contentsOf: url)?.cgImage(forProposedRect: nil, context: nil, hints: nil),
+              image.width == atlasW, image.height == cardH * 6 else { return nil }
+        let w = image.width, h = image.height
+        var bytes = [UInt8](repeating: 0, count: w * h * 4)
+        guard let ctx = CGContext(data: &bytes, width: w, height: h, bitsPerComponent: 8, bytesPerRow: w * 4,
+                                  space: CGColorSpaceCreateDeviceRGB(),
+                                  bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue) else { return nil }
+        ctx.draw(image, in: CGRect(x: 0, y: 0, width: w, height: h))
+        for i in stride(from: 0, to: bytes.count, by: 4) where bytes[i] == 0 && bytes[i + 1] == 99 && bytes[i + 2] == 0 {
+            bytes[i + 3] = 0
+        }
+        return Atlas(bytes: bytes, width: w, height: h, backs: Array(52..<62) + Array(65..<74))
+    }
 
     struct Color: Equatable { var r, g, b: UInt8; var a: UInt8 = 255 }
     static let white = Color(r: 255, g: 255, b: 255)
@@ -171,7 +201,7 @@ enum CardArt {
 
     // MARK: Atlas
 
-    /// RGBA8, row-major, atlasW × atlasH.
+    /// The drawn deck: RGBA8, row-major, atlasW × atlasH.
     static func makeAtlas() -> [UInt8] {
         var atlas = Sprite(w: atlasW, h: atlasH, fill: clear)
         for suit in 0..<4 {

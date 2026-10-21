@@ -23,7 +23,8 @@ final class SolitaireSaverView: ScreenSaverView {
 
     init?(frame: NSRect, isPreview: Bool, seed: UInt64, options: Options) {
         let rng = RNG(seed: seed)
-        engine = Engine(rng: rng)
+        let art = CardArt.atlas(bundle: Bundle(for: SolitaireSaverView.self), preferDrawn: options.drawnDeck)
+        engine = Engine(rng: rng, backs: art.backs)
         director = Director(rng: rng, options: options, isPreview: isPreview)
         mtkView = MTKView(frame: NSRect(origin: .zero, size: frame.size), device: MTLCreateSystemDefaultDevice())
         super.init(frame: frame, isPreview: isPreview)
@@ -33,7 +34,7 @@ final class SolitaireSaverView: ScreenSaverView {
         mtkView.isPaused = true
         mtkView.enableSetNeedsDisplay = false
         addSubview(mtkView)
-        renderer = Renderer(view: mtkView)
+        renderer = Renderer(view: mtkView, atlas: art)
         if !isPreview {
             DistributedNotificationCenter.default().addObserver(
                 self, selector: #selector(willStop), name: .init("com.apple.screensaver.willstop"), object: nil)
@@ -113,6 +114,8 @@ final class SolitaireSaverView: ScreenSaverView {
     func setChaos(_ c: Double?) { director.chaosOverride = c }
 
     func force(_ family: Family) { director.force(family, engine: engine) }
+
+    func force(named name: String) { director.force(named: name, engine: engine) }
 
     func snapshot(to url: URL) { renderer?.requestSnapshot(to: url) }
 }

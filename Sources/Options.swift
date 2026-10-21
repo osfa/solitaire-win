@@ -8,6 +8,7 @@ struct Options {
     var maxChaos = 1.0
     var families = Set(Family.allCases)
     var startBroken = false
+    var drawnDeck = false
 
     private static var defaults: ScreenSaverDefaults? { ScreenSaverDefaults(forModuleWithName: moduleName) }
 
@@ -18,6 +19,7 @@ struct Options {
         if d.object(forKey: "maxChaos") != nil { o.maxChaos = d.double(forKey: "maxChaos") }
         if let raw = d.array(forKey: "families") as? [Int] { o.families = Set(raw.compactMap(Family.init(rawValue:))) }
         o.startBroken = d.bool(forKey: "startBroken")
+        o.drawnDeck = d.bool(forKey: "drawnDeck")
         return o
     }
 
@@ -27,6 +29,7 @@ struct Options {
         d.set(maxChaos, forKey: "maxChaos")
         d.set(families.map(\.rawValue), forKey: "families")
         d.set(startBroken, forKey: "startBroken")
+        d.set(drawnDeck, forKey: "drawnDeck")
         d.synchronize()
     }
 }
@@ -41,14 +44,16 @@ final class OptionsSheet: NSObject {
     private let maxLabel = NSTextField(labelWithString: "")
     private var familyBoxes: [Family: NSButton] = [:]
     private let broken = NSButton(checkboxWithTitle: "Start already broken", target: nil, action: nil)
+    private let drawn = NSButton(checkboxWithTitle: "Use the drawn deck instead of the original cards", target: nil, action: nil)
 
     override init() {
-        window = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 400, height: 360), styleMask: [.titled], backing: .buffered, defer: true)
+        window = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 400, height: 390), styleMask: [.titled], backing: .buffered, defer: true)
         super.init()
 
         ramp.doubleValue = options.rampMinutes
         maxChaos.doubleValue = options.maxChaos
         broken.state = options.startBroken ? .on : .off
+        drawn.state = options.drawnDeck ? .on : .off
         for s in [ramp, maxChaos] {
             s.target = self
             s.action = #selector(changed)
@@ -71,6 +76,7 @@ final class OptionsSheet: NSObject {
             stack.addArrangedSubview(b)
         }
         stack.addArrangedSubview(broken)
+        stack.addArrangedSubview(drawn)
         let ok = NSButton(title: "OK", target: self, action: #selector(done))
         ok.keyEquivalent = "\r"
         stack.addArrangedSubview(ok)
@@ -90,6 +96,7 @@ final class OptionsSheet: NSObject {
         options.maxChaos = maxChaos.doubleValue
         options.families = Set(familyBoxes.filter { $0.value.state == .on }.map(\.key))
         options.startBroken = broken.state == .on
+        options.drawnDeck = drawn.state == .on
         options.save()
         if let parent = window.sheetParent { parent.endSheet(window) } else { window.close() }
     }
